@@ -5,6 +5,7 @@ import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, EyeIcon, EyeSlashIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 export default function UserHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -478,6 +479,15 @@ export default function UserHeader() {
                   Log In
                 </button>
               </form>
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-white/30" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-[#3b2a24] px-3 text-white/70">or</span>
+                </div>
+              </div>
+              <GoogleLoginButton returnTo={intendedPath || "/"} dark />
               <div className="mt-6 text-center">
                 <p className="text-white/90">
                   Don't have an account?{" "}

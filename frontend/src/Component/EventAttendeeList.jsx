@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiRefreshCw, FiMail, FiCopy } from "react-icons/fi";
-import { FaInfoCircle, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 
 const AttendeeList = ({ eventId, attendees, onRefresh, loading }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,7 +142,7 @@ const AttendeeList = ({ eventId, attendees, onRefresh, loading }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAttendees.map((attendee) => (
             <div
-              key={attendee._id}
+              key={attendee.registrationId}
               className="bg-gray-50 p-4 rounded-xl border-l-4 border-[#D08860] hover:shadow-md transition-all duration-300 relative"
             >
               <div className="flex items-center space-x-4">
@@ -173,19 +173,6 @@ const AttendeeList = ({ eventId, attendees, onRefresh, loading }) => {
                         <p>
                           Cancelled: {new Date(attendee.cancelledAt).toLocaleDateString()}
                         </p>
-                        <p>
-                          Refund: {attendee.refundAmount.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
-                        </p>
-                        {attendee.cancellationReason && (
-                          <p title={attendee.cancellationReason}>
-                            Reason: {attendee.cancellationReason.length > 20
-                              ? `${attendee.cancellationReason.slice(0, 20)}...`
-                              : attendee.cancellationReason}
-                          </p>
-                        )}
                       </div>
                     )}
                   </div>
@@ -206,14 +193,6 @@ const AttendeeList = ({ eventId, attendees, onRefresh, loading }) => {
                 >
                   <FiCopy className="h-5 w-5" />
                 </button>
-                {attendee.cancellationReason && (
-                  <button
-                    className="text-gray-500 hover:text-amber-800 p-1 transform hover:scale-110 transition duration-300"
-                    title={attendee.cancellationReason}
-                  >
-                    <FaInfoCircle className="h-5 w-5" />
-                  </button>
-                )}
               </div>
             </div>
           ))}

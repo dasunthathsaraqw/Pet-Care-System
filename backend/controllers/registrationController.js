@@ -600,8 +600,22 @@ export const getRegistrationsByEvent = async (req, res) => {
       query.status = status;
     }
 
-    const registrations = await Registration.find(query).populate("userId", "name email");
-    res.status(200).json({ success: true, registrations });
+    const registrations = await Registration.find(query)
+      .select("userId tickets status registeredAt cancelledAt")
+      .populate("userId", "name email")
+      .lean();
+
+    const attendeeDtos = registrations.map((registration) => ({
+      registrationId: registration._id.toString(),
+      name: registration.userId?.name || "Unknown user",
+      email: registration.userId?.email || "",
+      tickets: registration.tickets,
+      status: registration.status,
+      registeredAt: registration.registeredAt,
+      cancelledAt: registration.cancelledAt,
+    }));
+
+    res.status(200).json({ success: true, registrations: attendeeDtos });
   } catch (error) {
     console.error("Error fetching registrations:", error);
     res.status(500).json({ success: false, message: "Failed to fetch registrations", error: error.message });

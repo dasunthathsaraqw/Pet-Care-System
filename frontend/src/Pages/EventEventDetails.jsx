@@ -22,7 +22,11 @@ const EventDetails = () => {
         setEvent(eventResponse.data);
 
         try {
-          const attendeesResponse = await axios.get(`http://localhost:5000/api/registrations/event/${id}`);
+          const adminToken = localStorage.getItem("adminToken");
+          const attendeesResponse = await axios.get(
+            `http://localhost:5000/api/registrations/event/${id}`,
+            { headers: { Authorization: `Bearer ${adminToken}` } }
+          );
           setAttendees(attendeesResponse.data.registrations || []);
         } catch (attendeesError) {
           console.error("Error fetching attendees:", attendeesError);
@@ -43,7 +47,11 @@ const EventDetails = () => {
   const refreshAttendees = async () => {
     try {
       setAttendeesLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/registrations/event/${id}`);
+      const adminToken = localStorage.getItem("adminToken");
+      const response = await axios.get(
+        `http://localhost:5000/api/registrations/event/${id}`,
+        { headers: { Authorization: `Bearer ${adminToken}` } }
+      );
       setAttendees(response.data.registrations || []);
     } catch (err) {
       console.error("Error refreshing attendees:", err);

@@ -42,22 +42,21 @@ const UserEventDetailsPage = () => {
       if (token) {
         const [userResponse, regResponse] = await Promise.all([
           api.get("/users/profile"),
-          api.get(`/registrations/event/${id}`),
+          api.get("/registrations/user"),
         ]);
         setUser(userResponse.data);
 
         const userRegistrations = regResponse.data.registrations || [];
-        const isUserRegistered = userRegistrations.some(
-          (reg) => {
-            const userId = reg.userId;
-            const userIdToCompare = typeof userId === "string" ? userId : userId?._id;
-            return (
-              userIdToCompare === userResponse.data._id &&
-              reg.paymentStatus === "paid" &&
-              reg.status === "active"
-            );
-          }
-        );
+        const isUserRegistered = userRegistrations.some((reg) => {
+          const registrationEventId =
+            typeof reg.eventId === "string" ? reg.eventId : reg.eventId?._id;
+
+          return (
+            registrationEventId === id &&
+            reg.paymentStatus === "paid" &&
+            reg.status === "active"
+          );
+        });
         setIsRegistered(isUserRegistered);
       }
     } catch (err) {

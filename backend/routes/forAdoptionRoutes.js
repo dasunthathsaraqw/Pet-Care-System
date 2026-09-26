@@ -1,5 +1,5 @@
 import express from "express";
-import multer from "multer";
+import validatedPetImageUpload from "../middleware/validatedPetImageUpload.js";
 import {
   addPet,
   getAllAdoptionListings, 
@@ -11,18 +11,8 @@ import {
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
-});
-const upload = multer({ storage });
-
 // Routes
-router.post("/", upload.single("petImage"), addPet); // Accept image upload
+router.post("/", validatedPetImageUpload("petImage"), addPet); // Accept image upload
 
 // Get all adoption listings
 router.get('/', getAllAdoptionListings);
@@ -34,7 +24,7 @@ router.get('/owner/:userId', getAdoptionListingsByOwner);
 router.get('/:id', getAdoptionListingById);
 
 // Update adoption listing
-router.put('/:id', upload.single('petImage'), updateAdoptionListing);
+router.put('/:id', validatedPetImageUpload('petImage'), updateAdoptionListing);
 
 // Delete adoption listing
 router.delete('/:id', deleteAdoptionListing);

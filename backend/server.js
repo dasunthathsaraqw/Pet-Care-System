@@ -2,6 +2,8 @@ import "./config/loadEnv.js";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 
@@ -32,11 +34,22 @@ import googleAuthRoutes from "./routes/googleAuthRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const uploadsDirectory = fileURLToPath(new URL('./uploads/', import.meta.url));
+const allowedUploadExtensions = new Set(['.jpg', '.jpeg', '.png', '.gif']);
 
 // Middleware
 app.use(cors());
 app.use(express.json()); // Parse incoming JSON requests
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', (req, res, next) => {
+  if (!allowedUploadExtensions.has(path.extname(req.path).toLowerCase())) {
+    return res.sendStatus(404);
+  }
+  next();
+}, express.static(uploadsDirectory, {
+  setHeaders(res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+  }
+}));
 
 // Cloudinary Configuration
 cloudinary.config({

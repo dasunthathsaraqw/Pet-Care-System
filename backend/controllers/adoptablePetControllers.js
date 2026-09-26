@@ -1,15 +1,25 @@
 import AdoptablePet from "../models/AdoptablePet.js";
+import { rm } from "node:fs/promises";
 
 // Create Adoptable Pet
 export const createAdoptablePet = async (req, res) => {
+  let saved = false;
   try {
     const { Pet_Name, Breed, Species, Gender, Age, Pet_Description } = req.body;
     const Pet_Image = req.file ? `/uploads/${req.file.filename}` : null;
 
     const pet = new AdoptablePet({ Pet_Name, Breed, Species, Gender, Age, Pet_Description, Pet_Image });
     await pet.save();
+    saved = true;
     res.status(201).json(pet);
   } catch (error) {
+    if (!saved && req.file?.path) {
+      try {
+        await rm(req.file.path, { force: true });
+      } catch (cleanupError) {
+        console.error('Error removing new uploaded image:', cleanupError);
+      }
+    }
     res.status(500).json({ error: error.message });
   }
 };

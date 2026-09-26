@@ -1,5 +1,4 @@
 import ForAdoption from "../models/ForAdoption.js";
-import multer from "multer";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -8,20 +7,28 @@ import fs from 'fs';
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const uploadsDirectory = path.join(__dirname, '..', 'uploads');
 
-// Configure multer for image upload
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+async function removeNewUploadedImage(file) {
+    if (!file?.path) return;
+    try {
+        await fs.promises.rm(file.path, { force: true });
+    } catch (error) {
+        console.error('Error removing new uploaded image:', error);
     }
-});
-export const upload = multer({ storage }); // Export the upload instance
+}
+
+function storedUploadPath(imageUrl) {
+    if (typeof imageUrl !== 'string' || !imageUrl.startsWith('/uploads/')) return null;
+    const filename = imageUrl.slice('/uploads/'.length);
+    if (!filename || filename.includes('/') || filename.includes('\\') || filename.includes(':')) return null;
+    const imagePath = path.resolve(uploadsDirectory, filename);
+    return path.dirname(imagePath) === uploadsDirectory ? imagePath : null;
+}
 
 // Add a pet for adoption (with image)
 export const addPet = async (req, res) => {
+    let saved = false;
     try {
         console.log('Received request body:', req.body);
         console.log('Received file:', req.file);
@@ -77,6 +84,7 @@ export const addPet = async (req, res) => {
         console.log('Created new pet object:', newPet);
 
         await newPet.save();
+        saved = true;
         console.log('Saved pet:', {
             _id: newPet._id,
             userId: newPet.userId,
@@ -86,6 +94,7 @@ export const addPet = async (req, res) => {
         });
         res.status(201).json({ message: "Pet added for adoption successfully", newPet });
     } catch (error) {
+        if (!saved) await removeNewUploadedImage(req.file);
         console.error('Error adding pet:', error);
         res.status(500).json({ error: error.message });
     }
@@ -151,11 +160,13 @@ export const getAdoptionListingsByOwner = async (req, res) => {
 
 // Update adoption listing
 export const updateAdoptionListing = async (req, res) => {
+    let updated = false;
     try {
         const listingId = req.params.id;
         const listing = await ForAdoption.findById(listingId);
         
         if (!listing) {
+            await removeNewUploadedImage(req.file);
             return res.status(404).json({ message: 'Adoption listing not found' });
         }
         
@@ -170,8 +181,7 @@ export const updateAdoptionListing = async (req, res) => {
             'reason',
             'specialNeeds',
             'vaccinated',
-            'neutered',
-            'petImage'
+            'neutered'
         ];
         
         // Filter out any fields that are not in allowedFields
@@ -191,18 +201,6 @@ export const updateAdoptionListing = async (req, res) => {
         
         // Handle image upload if a new image is provided
         if (req.file) {
-            // Delete old image if it exists
-            if (listing.petImage) {
-                const oldImagePath = path.join(__dirname, '..', listing.petImage);
-                try {
-                    if (fs.existsSync(oldImagePath)) {
-                        fs.unlinkSync(oldImagePath);
-                    }
-                } catch (err) {
-                    console.error('Error deleting old image:', err);
-                }
-            }
-            // Update with new image path
             updatedData.petImage = `/uploads/${req.file.filename}`;
         }
         
@@ -211,9 +209,27 @@ export const updateAdoptionListing = async (req, res) => {
             { $set: updatedData },
             { new: true }
         );
+        if (!updatedListing) {
+            await removeNewUploadedImage(req.file);
+            return res.status(404).json({ message: 'Adoption listing not found' });
+        }
+        updated = true;
+
+        // Remove the previous image only after the new path is saved.
+        if (req.file && listing.petImage) {
+            const oldImagePath = storedUploadPath(listing.petImage);
+            if (oldImagePath) {
+                try {
+                    await fs.promises.rm(oldImagePath, { force: true });
+                } catch (err) {
+                    console.error('Error deleting old image:', err);
+                }
+            }
+        }
         
         res.status(200).json(updatedListing);
     } catch (error) {
+        if (!updated) await removeNewUploadedImage(req.file);
         console.error('Error updating adoption listing:', error);
         res.status(500).json({ message: 'Failed to update adoption listing', error: error.message });
     }

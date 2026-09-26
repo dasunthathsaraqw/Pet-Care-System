@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import UserLoginImg from "../assets/UserLogin.jpg";
+import GoogleLoginButton from "../Component/GoogleLoginButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,22 @@ export default function Login() {
   // Get the intended destination and its state from location state
   const from = location.state?.from?.pathname || "/";
   const fromState = location.state?.from?.state;
+
+  useEffect(() => {
+    const errorCode = new URLSearchParams(location.search).get("oauth_error");
+    const errorMessages = {
+      authorization_cancelled: "Google login was cancelled.",
+      invalid_transaction: "Google login session expired. Please try again.",
+      unverified_email: "Google must verify your email before you can sign in.",
+      account_link_required:
+        "An account already uses this email. Sign in with your password before linking Google.",
+      authentication_failed: "Google login could not be completed. Please try again.",
+    };
+
+    if (errorCode) {
+      setLoginError(errorMessages[errorCode] || "Google login failed.");
+    }
+  }, [location.search]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -141,6 +158,17 @@ export default function Login() {
             </div>
           </form>
 
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-3 text-gray-500">or</span>
+            </div>
+          </div>
+
+          <GoogleLoginButton returnTo={from} />
+
           <div className="mt-6 text-center">
             <p className="text-gray-900">
               Don't have an account?{" "}
@@ -162,4 +190,4 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+}

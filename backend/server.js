@@ -1,7 +1,7 @@
+import "./config/loadEnv.js";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 
@@ -28,9 +28,7 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import petStoreReviewRouter from "./routes/petStoreReviewRoute.js";
 import reportRoutes from "./routes/reportRoutes.js"; // Add this line
-
-
-dotenv.config();
+import googleAuthRoutes from "./routes/googleAuthRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,6 +48,7 @@ cloudinary.config({
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/auth", googleAuthRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/admins", adminRoutes);
 

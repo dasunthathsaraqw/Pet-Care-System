@@ -1,6 +1,7 @@
 import express from "express";
 import { registerUser, loginUser, getUserProfile, updateProfile , deleteProfile, getAllUsers,deleteProfileById } from "../controllers/userController.js";
 import auth from "../middleware/authMiddleware.js";
+import { userLoginLimiter } from "../middleware/rateLimitMiddleware.js"; // FIX 5.3
 import { requireRole, allowSelfOrAdmin } from "../middleware/roleMiddleware.js";
 import multer from "multer";
 import path from "path";
@@ -47,7 +48,7 @@ const upload = multer({
 const router = express.Router();
 
 router.post("/register", upload.single("profilePicture"), registerUser);
-router.post("/login", loginUser);
+router.post("/login", userLoginLimiter, loginUser); // FIX 5.3
 router.get("/profile", auth, getUserProfile);
 router.put("/updateProfile", auth, upload.single("profilePicture"), updateProfile);
 router.post("/deleteProfile", auth, deleteProfile);

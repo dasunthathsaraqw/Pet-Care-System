@@ -1,14 +1,36 @@
-import Admin from '../models/Admin.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import Admin from "../models/Admin.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+98;
+// NOTE: this route is now gated behind requireRole(['user_admin']) (see
+// routes/adminRoutes.js), so only an authenticated user_admin can reach it.
+// The requested role is validated against the allowed set instead of being
+// trusted blindly from the request body (fix for audit finding #1 mass-assignment).
+const ALLOWED_ADMIN_ROLES = [
+  "user_admin",
+  "event_manager",
+  "adoption_manager",
+  "appointment_manager",
+  "store_manager",
+];
 
 export const registerAdmin = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
+    // Validate the requested role against the allowed set (never trust it blindly).
+    const normalizedRole = typeof role === "string" ? role.toLowerCase() : "";
+    if (!ALLOWED_ADMIN_ROLES.includes(normalizedRole)) {
+      return res.status(400).json({
+        message: `Invalid role. Allowed roles: ${ALLOWED_ADMIN_ROLES.join(", ")}`,
+      });
+    }
+
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
-      return res.status(400).json({ message: 'Admin with this email already exists' });
+      return res
+        .status(400)
+        .json({ message: "Admin with this email already exists" });
     }
 
     // Create new admin (password will be hashed by pre-save hook)
@@ -16,14 +38,16 @@ export const registerAdmin = async (req, res) => {
       name,
       email,
       password,
-      role,
+      role: normalizedRole,
     });
 
     await admin.save();
 
-    res.status(201).json({ message: 'Admin registered successfully' });
+    res.status(201).json({ message: "Admin registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering admin', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error registering admin", error: error.message });
   }
 };
 
@@ -34,7 +58,7 @@ export const login = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required',
+        message: "Email and password are required",
       });
     }
 
@@ -42,7 +66,7 @@ export const login = async (req, res) => {
     if (!admin) {
       return res.status(404).json({
         success: false,
-        message: 'Admin not found',
+        message: "Admin not found",
       });
     }
 
@@ -50,19 +74,19 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid email or password',
+        message: "Invalid email or password",
       });
     }
 
     const token = jwt.sign(
       { adminId: admin._id, role: admin.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: "1d" },
     );
 
     res.status(200).json({
       success: true,
-      message: 'Login successful',
+      message: "Login successful",
       token,
       admin: {
         _id: admin._id,
@@ -72,10 +96,10 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
@@ -83,12 +107,12 @@ export const login = async (req, res) => {
 // Get admin details (protected route)
 export const getProfile = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.adminId).select('-password');
+    const admin = await Admin.findById(req.adminId).select("-password");
 
     if (!admin) {
       return res.status(404).json({
         success: false,
-        message: 'Admin not found',
+        message: "Admin not found",
       });
     }
 
@@ -102,10 +126,10 @@ export const getProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error fetching admin details:', error);
+    console.error("Error fetching admin details:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };

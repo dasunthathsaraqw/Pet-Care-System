@@ -9,6 +9,7 @@ import {registerProfessional,
   loginLimiter
 } from "../controllers/profController.js";
 import adminAuth from "../middleware/adminAuthMiddleware.js";
+import { requireRole } from "../middleware/roleMiddleware.js";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -60,10 +61,11 @@ router.post("/register", upload.single("profilePicture"), (req, res, next) => {
   next();
 }, registerProfessional);
 router.post('/profflogin', loginLimiter, profLogin);
+// Professional management restricted to user_admin (was any admin — fix for audit finding #1).
 router.get("/profile", adminAuth, getProfile);
-router.get("/all", adminAuth, getAllProfessionals);
-router.get("/:id", adminAuth, getProfessionalById);
-router.put("/update/:id", adminAuth, upload.single("profilePicture"), updateProfessional);
-router.post("/delete/:id", adminAuth, deleteProfileById);
+router.get("/all", requireRole(["user_admin"]), getAllProfessionals);
+router.get("/:id", requireRole(["user_admin"]), getProfessionalById);
+router.put("/update/:id", requireRole(["user_admin"]), upload.single("profilePicture"), updateProfessional);
+router.post("/delete/:id", requireRole(["user_admin"]), deleteProfileById);
 
 export default router;

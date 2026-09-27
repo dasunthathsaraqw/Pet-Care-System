@@ -1,0 +1,18 @@
+# ATTACK 6 - userA deletes userB
+# Attempted: POST /api/users/deleteProfile/<userB_id> with userA token
+# Expected AFTER fix: 403 (may only delete own profile)
+
+# target userB2 _id: 6ab89e355ea469f4546a5d3a
+
+## Response:
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 50
+ETag: W/"32-uTxt+bdLeLwfLJ4bvbOrronFcLA"
+Date: Sun, 27 Sep 2026 04:40:21 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"You can only delete your own profile"}

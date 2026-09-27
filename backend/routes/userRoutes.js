@@ -1,6 +1,7 @@
 import express from "express";
 import { registerUser, loginUser, getUserProfile, updateProfile , deleteProfile, getAllUsers,deleteProfileById } from "../controllers/userController.js";
 import auth from "../middleware/authMiddleware.js";
+import { requireRole, allowSelfOrAdmin } from "../middleware/roleMiddleware.js";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -50,7 +51,7 @@ router.post("/login", loginUser);
 router.get("/profile", auth, getUserProfile);
 router.put("/updateProfile", auth, upload.single("profilePicture"), updateProfile);
 router.post("/deleteProfile", auth, deleteProfile);
-router.get('/all', auth, getAllUsers);
-router.post('/deleteProfile/:id', auth, deleteProfileById);
+router.get('/all', requireRole(['user_admin']), getAllUsers);
+router.post('/deleteProfile/:id', allowSelfOrAdmin, deleteProfileById);
 
 export default router;

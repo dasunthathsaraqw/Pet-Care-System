@@ -6,6 +6,7 @@ import {
   updateAdoptablePet,
   deleteAdoptablePet
 } from "../controllers/adoptablePetControllers.js"
+import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -16,10 +17,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Routes
-router.post("/", upload.single("Pet_Image"), createAdoptablePet);
+// Routes (public read; mutations restricted to adoption managers — fix for audit finding #1)
+router.post("/", requireRole(["adoption_manager"]), upload.single("Pet_Image"), createAdoptablePet);
 router.get("/", getAllAdoptablePets);
-router.put("/:id", updateAdoptablePet);
-router.delete("/:id", deleteAdoptablePet);
+router.put("/:id", requireRole(["adoption_manager"]), updateAdoptablePet);
+router.delete("/:id", requireRole(["adoption_manager"]), deleteAdoptablePet);
 
 export default router;

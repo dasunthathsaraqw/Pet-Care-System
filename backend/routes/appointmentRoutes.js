@@ -46,6 +46,7 @@ import {
 import { authenticateProfessional } from '../middleware/professionalAuth.js';
 import { profAuthcreate } from '../middleware/authProfessionalforcreate.js';
 import { profAuth } from '../middleware/profMiddleware.js';
+import { requireRole } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -61,10 +62,11 @@ router.patch('/:id/cancel', auth, cancelAppointment);
 router.patch('/:id/cancel-with-refund', auth, cancelAppointmentWithRefund);
 
 
-router.get('/groomer-appointments', getGroomerAppointments);
-router.get('/trainer-appointments', getTrainerAppointments);
-router.get('/veterinarian-appointments', getVeterinarianAppointments);
-router.get('/all-cancelled-appointments', getAllCancelledAppointments);
+// Manager dashboards (expose customer PII) — appointment managers only (fix for audit finding #1)
+router.get('/groomer-appointments', requireRole(['appointment_manager']), getGroomerAppointments);
+router.get('/trainer-appointments', requireRole(['appointment_manager']), getTrainerAppointments);
+router.get('/veterinarian-appointments', requireRole(['appointment_manager']), getVeterinarianAppointments);
+router.get('/all-cancelled-appointments', requireRole(['appointment_manager']), getAllCancelledAppointments);
 
 // New route for fetching logged-in user's active appointments
 router.get('/active', auth, getActiveAppointments);
@@ -82,8 +84,8 @@ router.get('/date-distribution', profAuthcreate, getAppointmentDateDistribution)
 router.get('/payment-status-distribution', profAuthcreate, getPaymentStatusDistribution);
 router.get('/time-slot-distribution', profAuthcreate, getAppointmentTimeSlotDistribution);
 
-router.patch('/:id/deny', denyAppointment);
-router.patch('/:id/accept', acceptAppointment);
+router.patch('/:id/deny', requireRole(['appointment_manager']), denyAppointment);
+router.patch('/:id/accept', requireRole(['appointment_manager']), acceptAppointment);
 
 
 
@@ -106,11 +108,11 @@ router.get('/active-professionals', getActiveProfessionals);
 
 router.get('/list', proffAppointmentDisplayByFilter);
 
-router.get('/reports/generate', generateReports);
+router.get('/reports/generate', requireRole(['appointment_manager']), generateReports);
 
 
-router.patch('/refundrequests/:id/status', updateRefundStatus);
-router.get('/refundrequestforreview', getAllRefundRequests);
+router.patch('/refundrequests/:id/status', requireRole(['appointment_manager']), updateRefundStatus);
+router.get('/refundrequestforreview', requireRole(['appointment_manager']), getAllRefundRequests);
 
 
 

@@ -9,11 +9,12 @@ import {
   getAllOrders
 } from '../controllers/orderController.js';
 import authUser from '../middleware/auth.js';
+import { requireRole } from '../middleware/roleMiddleware.js';
 
 const orderRouter = express.Router();
 
-// Get all orders route
-orderRouter.get('/all', authUser, getAllOrders);
+// Get all orders route (store managers only — fix for audit finding #1)
+orderRouter.get('/all', requireRole(['store_manager']), getAllOrders);
 
 // User routes
 orderRouter.post('/user', authUser, getUserOrders);
@@ -23,6 +24,6 @@ orderRouter.post('/verify', authUser, verifyStripe);
 
 // Order details and status routes
 orderRouter.get('/details/:orderId', authUser, getOrderDetails);
-orderRouter.put('/status/:orderId', authUser, updateOrderStatus);
+orderRouter.put('/status/:orderId', requireRole(['store_manager']), updateOrderStatus);
 
 export default orderRouter; 

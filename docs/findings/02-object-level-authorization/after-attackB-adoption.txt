@@ -1,0 +1,42 @@
+# IDOR B - read/modify another user's adoption application (AFTER)
+# Attempted: GET /:id, GET /all, PUT /update/:id as ATTACKER
+# Expected AFTER fix: 403 for others; /all requires adoption_manager
+
+## (1) GET victim application by id (attacker token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 51
+ETag: W/"33-zmKteG8DRXmkQToMLDdz90WH3po"
+Date: Sun, 27 Sep 2026 06:45:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Not authorized to view this application"}
+
+## (2) GET /all (attacker user token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 38
+ETag: W/"26-NAe9aZLHbIDFxDXuxoDtJ5ozBM4"
+Date: Sun, 27 Sep 2026 06:45:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Insufficient permissions"}
+
+## (3) PUT tamper -> approved (attacker token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 53
+ETag: W/"35-U93TEVB64F3eYOu79tclt/zLi5I"
+Date: Sun, 27 Sep 2026 06:45:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Not authorized to update this application"}

@@ -1,0 +1,15 @@
+# REGRESSION - normal user views own appointments
+# Expected: 200 (array, possibly empty)
+# ---
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 58
+ETag: W/"3a-EymGcVaSvHFRyoLvf0Lybz8nx2s"
+Date: Sun, 27 Sep 2026 04:40:43 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"No active appointments found"}

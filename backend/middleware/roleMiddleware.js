@@ -18,6 +18,20 @@ const extractToken = (req) => {
   return header.startsWith("Bearer ") ? header.slice(7) : header.split(" ")[1] || null;
 };
 
+// Helper for object-level checks (fix for audit finding #2). Given a request
+// that already passed an auth middleware (req.user = decoded token), returns
+// true only if the caller is an admin whose *database* role is in `roles`.
+// Used by controllers to allow a manager override on owner-scoped records.
+export const isAdmin = async (req, roles = []) => {
+  const allowed = roles.map((r) => r.toLowerCase());
+  const adminId = req.user?.adminId || req.adminId;
+  if (!adminId) return false;
+  const admin = await Admin.findById(adminId).select("role");
+  if (!admin) return false;
+  const role = (admin.role || "").toLowerCase();
+  return allowed.length === 0 || allowed.includes(role);
+};
+
 export const requireRole = (allowedRoles = []) => {
   const allowed = allowedRoles.map((r) => r.toLowerCase());
   return async (req, res, next) => {

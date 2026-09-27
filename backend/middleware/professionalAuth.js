@@ -11,6 +11,9 @@ export const authenticateProfessional = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.type !== "professional") { // FIX 5.2
+      return res.status(401).json({ message: "Invalid or expired token" }); // FIX 5.2
+    } // FIX 5.2
     req.professional = decoded; // decoded contains { id: professional._id }
     // Fetch pID from the database using the decoded ID
     Professional.findById(decoded.id)

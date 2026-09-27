@@ -85,9 +85,8 @@ if (!owns && !manager) {
     return res.status(403).json({ error: "Not authorized to update this application" });
 }
 
-// Define which fields owners may edit; managers may also change status.
-const ownerEditable = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
-const allowedFields = manager ? [...ownerEditable, 'status'] : ownerEditable;
+// This route updates only applicant-editable fields for every caller.
+const allowedFields = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
 
 const updates = {};
 for (const field of allowedFields) {
@@ -98,14 +97,6 @@ for (const field of allowedFields) {
 
 // Never allow the owner link to be reassigned.
 delete updates.email;
-
-// If status is being set, validate it against the schema enum.
-if (Object.prototype.hasOwnProperty.call(updates, 'status')) {
-    const allowedStatuses = AdoptionForm.schema.path('status').enumValues;
-    if (!allowedStatuses.includes(updates.status)) {
-        return res.status(400).json({ error: 'Invalid status update' });
-    }
-}
 
 const updated = await AdoptionForm.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true, runValidators: true });
 res.status(200).json(updated);

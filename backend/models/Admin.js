@@ -19,7 +19,13 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: [8, 'Password must be at least 8 characters long'],
-      maxlength: [20, 'Password cannot exceed 20 characters'],
+      validate: { // FIX 5.3
+        validator: function (v) { // FIX 5.3
+          if (!v || v.startsWith('$2a$') || v.startsWith('$2b$') || v.startsWith('$2y$')) return true; // FIX 5.3
+          return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(v); // FIX 5.3
+        }, // FIX 5.3
+        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one digit', // FIX 5.3
+      }, // FIX 5.3
     },
     role: {
       type: String,

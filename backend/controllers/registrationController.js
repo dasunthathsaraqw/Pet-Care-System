@@ -596,8 +596,8 @@ export const getRegistrationsByEvent = async (req, res) => {
     }
 
     const query = { eventId: id };
-    if (status) {
-      query.status = status;
+    if (typeof status === "string" && status) {
+      query.status = status; // string only — no operator objects (fix for audit finding #3)
     }
 
     const registrations = await Registration.find(query)
@@ -629,8 +629,8 @@ export const getUserRegistrations = async (req, res) => {
     const { status } = req.query;
 
     const query = { userId };
-    if (status) {
-      query.status = status;
+    if (typeof status === "string" && status) {
+      query.status = status; // string only — no operator objects (fix for audit finding #3)
     }
 
     const registrations = await Registration.find(query)

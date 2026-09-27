@@ -68,8 +68,8 @@ export const getEventNotifications = async (req, res) => {
     const { type } = req.query; // Optional: filter by type ("admin" or "user")
 
     const query = { eventId: id };
-    if (type) {
-      query.type = type;
+    if (typeof type === "string" && type) {
+      query.type = type; // string only — no operator objects (fix for audit finding #3)
     }
 
     const notifications = await EventNotification.find(query)

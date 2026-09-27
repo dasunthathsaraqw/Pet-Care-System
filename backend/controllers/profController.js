@@ -21,10 +21,11 @@ export const profLogin = async (req, res) => {
     const { email, password } = req.body;
     console.log('Login attempt:', { email });
 
-    // Validate input
-    if (!email || !password) {
+    // Validate input — credentials must be strings; blocks NoSQL operator
+    // injection like {$ne:null}/{$regex:...} (fix for audit finding #3).
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
- HAMZA    }
+    }
 
     // Find professional by email only
     const professional = await Professional.findOne({ pemail: email });

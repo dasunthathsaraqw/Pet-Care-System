@@ -95,6 +95,11 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Credentials must be strings; blocks NoSQL operator injection (fix for audit finding #3).
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {

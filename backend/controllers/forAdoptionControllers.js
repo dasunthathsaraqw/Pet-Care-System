@@ -111,7 +111,8 @@ export const addPet = async (req, res) => {
 export const getAllAdoptionListings = async (req, res) => {
     try {
         const userId = req.query.userId;
-        const query = userId ? { userId } : {};
+        // string only — ignore operator objects like ?userId[$ne]= (fix for audit finding #3)
+        const query = typeof userId === "string" && userId ? { userId } : {};
         const listings = await ForAdoption.find(query);
         res.status(200).json(listings);
     } catch (error) {

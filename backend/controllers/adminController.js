@@ -1,7 +1,7 @@
 import Admin from "../models/Admin.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-98;
+
 // NOTE: this route is now gated behind requireRole(['user_admin']) (see
 // routes/adminRoutes.js), so only an authenticated user_admin can reach it.
 // The requested role is validated against the allowed set instead of being
@@ -55,7 +55,9 @@ export const registerAdmin = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    if (!email || !password) {
+    // Credentials must be strings; reject objects like {$ne:null}/{$regex:...}
+    // before they ever reach the query (fix for audit finding #3 NoSQL injection).
+    if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
       return res.status(400).json({
         success: false,
         message: "Email and password are required",
@@ -63,16 +65,12 @@ export const login = async (req, res) => {
     }
 
     const admin = await Admin.findOne({ email });
-    if (!admin) {
-      return res.status(404).json({
-        success: false,
-        message: "Admin not found",
-      });
-    }
 
-    const isMatch = await admin.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({
+    // Same generic response whether the account is missing or the password is
+    // wrong, so the endpoint no longer leaks which admin emails exist.
+    const isMatch = admin ? await admin.comparePassword(password) : false;
+    if (!admin || !isMatch) {
+      return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });

@@ -1,0 +1,29 @@
+# IDOR A - read another user's orders (AFTER)
+# Attempted: POST /api/order/user body userId=victim as ATTACKER; GET /details/<victimOrder> as ATTACKER
+# Expected AFTER fix: /user ignores body userId (attacker's own only); /details = 403
+
+## (1) POST /api/order/user body userId=victim (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 28
+ETag: W/"1c-xruhkFjc458BV3T1nOF27Xifif8"
+Date: Sun, 27 Sep 2026 06:48:22 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":true,"orders":[]}
+
+## (2) GET /api/order/details/<victimOrderId> (attacker token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 63
+ETag: W/"3f-jDlt7dDxvEnpd6TAYnJD97UiDUY"
+Date: Sun, 27 Sep 2026 06:48:22 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Not authorized to view this order"}

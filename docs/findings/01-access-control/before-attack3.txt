@@ -1,0 +1,15 @@
+# ATTACK 3 - list all professionals with attacker token
+# Attempted: GET /api/professionals/all with attacker admin token
+# Expected when fixed: 403 (role not authorized)
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 345
+ETag: W/"159-9XZZkFko7tj1Ch+Wuz3yby9MSSE"
+Date: Sat, 26 Sep 2026 08:33:05 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab783401864ac9236362eb9","pName":"LegitVet","role":"vet","pID":"VET-TEST-001","pemail":"legit_vet@example.com","pphoneNumber":"0710000002","qualification":"BVSc","experience":"5 years","profilePicture":"","isVerified":false,"createdAt":"2026-09-26T08:33:04.767Z","updatedAt":"2026-09-26T08:33:04.767Z","id":"6ab783401864ac9236362eb9"}]

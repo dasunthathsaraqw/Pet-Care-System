@@ -8,25 +8,21 @@ import {
   getRefundedRegistrations,
 } from "../controllers/reportController.js";
 import auth from "../middleware/authMiddleware.js";
+import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// Get total registrations per event (requires auth, admin)
-router.get("/registrations-per-event",  getRegistrationsPerEvent);
+// Event registration/revenue analytics — event managers only (fix for audit finding #1).
+router.get("/registrations-per-event", requireRole(["event_manager"]), getRegistrationsPerEvent);
 
-// Get revenue per event (requires auth, admin)
-router.get("/revenue-per-event", getRevenuePerEvent);
+router.get("/revenue-per-event", requireRole(["event_manager"]), getRevenuePerEvent);
 
-// Get registration trends over time (requires auth, admin)
-router.get("/registration-trends",  getRegistrationTrends);
+router.get("/registration-trends", requireRole(["event_manager"]), getRegistrationTrends);
 
-// Get event status breakdown (requires auth, admin)
-router.get("/event-status-breakdown",  getEventStatusBreakdown);
+router.get("/event-status-breakdown", requireRole(["event_manager"]), getEventStatusBreakdown);
 
-// Get registrations by location (requires auth, admin)
-router.get("/registrations-by-location", getRegistrationsByLocation);
+router.get("/registrations-by-location", requireRole(["event_manager"]), getRegistrationsByLocation);
 
-// Get refunded registrations (requires auth, admin)
-router.get("/refunded-registrations", getRefundedRegistrations);
+router.get("/refunded-registrations", requireRole(["event_manager"]), getRefundedRegistrations);
 
 export default router;

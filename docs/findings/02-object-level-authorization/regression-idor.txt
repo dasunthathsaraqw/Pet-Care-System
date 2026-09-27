@@ -1,0 +1,106 @@
+# REGRESSION - legitimate owner & adoption_manager flows (finding #2)
+# ---
+
+## victim reads OWN orders (POST /api/order/user, victim token) — own order present:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 1178
+ETag: W/"49a-tWKVB+T9qjh3XiIEVwCbFRpI3vI"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":true,"orders":[{"_id":"6ab8bb6eb536db0f847d4eba","userId":"6ab8bb6b02d2dbdf0c991e52","products":[{"__parentArray":[{"_id":"6ab8bc4ed1038297e35ffdae","name":"Secret","quantity":1,"price":99,"size":"M"}],"__index":0,"$__parent":{"_id":"6ab8bb6eb536db0f847d4eba","userId":"6ab8bb6b02d2dbdf0c991e52","products":[{"_id":"6ab8bc4ed1038297e35ffdae","name":"Secret","quantity":1,"price":99,"size":"M"}],"totalPrice":99,"shippingAddress":"12 Victim Lane, Secret City","paymentMethod":"COD","payment":false,"status":"Pending","date":"2026-09-27T06:45:02.073Z","createdAt":"2026-09-27T06:45:02.073Z"},"$__":{"activePaths":{"paths":{"_id":"default","name":"init","quantity":"init","price":"init","size":"init"},"states":{"default":{"_id":true},"init":{"name":true,"quantity":true,"price":true,"size":true}}}},"_doc":{"_id":"6ab8bc4ed1038297e35ffdae","name":"Secret","quantity":1,"price":99,"size":"M"},"$isNew":false,"image":null,"name":"Secret","price":99,"quantity":1,"size":"M"}],"totalPrice":99,"shippingAddress":"12 Victim Lane, Secret City","paymentMethod":"COD","payment":false,"status":"Pending","date":"2026-09-27T06:45:02.073Z","createdAt":"2026-09-27T06:45:02.073Z"}]}
+
+## victim reads OWN order details:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 452
+ETag: W/"1c4-KhPZ/HrqBp3wqAQqK1crIpHODT8"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":true,"order":{"_id":"6ab8bb6eb536db0f847d4eba","userId":{"_id":"6ab8bb6b02d2dbdf0c991e52","name":"IdorVictim2","email":"idor_victim2@example.com"},"products":[{"_id":"6ab8bc4ed1038297e35ffdb0","name":"Secret","quantity":1,"price":99,"size":"M"}],"totalPrice":99,"shippingAddress":"12 Victim Lane, Secret City","paymentMethod":"COD","payment":false,"status":"Pending","date":"2026-09-27T06:45:02.073Z","createdAt":"2026-09-27T06:45:02.073Z"}}
+
+## victim reads OWN application:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 392
+ETag: W/"188-84xco/udpF8UUDnhVNAIngkMFFw"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8bb6e02d2dbdf0c991e61","firstName":"Victim","lastName":"Person","email":"idor_victim2@example.com","phoneNumber":"0720000010","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"private notes","status":"pending","createdAt":"2026-09-27T06:45:02.311Z","updatedAt":"2026-09-27T06:45:02.311Z","__v":0}
+
+## victim reads OWN home visit:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 328
+ETag: W/"148-R68N7pdcr4z9z0lTJtFyKwRjYbE"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8bb6e02d2dbdf0c991e63","adoptionFormId":"000000000000000000000abc","adopterName":"IdorVictim2","adopterEmail":"idor_victim2@example.com","petName":"Rex","date":"2030-02-01T00:00:00.000Z","status":"pending","userResponse":"pending","createdAt":"2026-09-27T06:45:02.532Z","updatedAt":"2026-09-27T06:45:02.532Z","__v":0}
+
+## victim reads OWN listings (/owner/:id):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 470
+ETag: W/"1d6-ZNKJD3orbtpePdpA3N9Ynvyt5FE"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab8bb6e02d2dbdf0c991e65","userId":"6ab8bb6b02d2dbdf0c991e52","ownerFirstName":"Victim","ownerLastName":"Person","email":"idor_victim2@example.com","phone":"0720000010","petName":"VictimCat","petAge":"2","petGender":"F","petBreed":"Tabby","petSpecies":"Cat","petDescription":"private","reason":"moving","specialNeeds":false,"vaccinated":true,"neutered":true,"petImage":null,"createdAt":"2026-09-27T06:45:02.771Z","updatedAt":"2026-09-27T06:45:02.771Z","__v":0}]
+
+## adoption_manager GET /all applications:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 782
+ETag: W/"30e-z0SJqz8gIc1V14FhcusHZnPd/uE"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab8b704b532676661937427","firstName":"Victim","lastName":"Person","email":"idor_victim@example.com","phoneNumber":"0720000001","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"HIJACKED","status":"approved","createdAt":"2026-09-27T06:26:12.014Z","updatedAt":"2026-09-27T06:26:12.298Z","__v":0},{"_id":"6ab8bb6e02d2dbdf0c991e61","firstName":"Victim","lastName":"Person","email":"idor_victim2@example.com","phoneNumber":"0720000010","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"private notes","status":"pending","createdAt":"2026-09-27T06:45:02.311Z","updatedAt":"2026-09-27T06:45:02.311Z","__v":0}]
+
+## adoption_manager GET all home visits:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 690
+ETag: W/"2b2-MYiky/j9XE+21SdVFaSPkTetlGQ"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"_id":"6ab8b72db53267666193742f","adoptionFormId":"6ab8b72d00db8a6361e47537","adopterName":"IdorVictim","adopterEmail":"idor_victim@example.com","petName":"Rex","date":"2030-02-01T00:00:00.000Z","status":"cancelled","userResponse":"pending","createdAt":"2026-09-27T06:26:53.574Z","updatedAt":"2026-09-27T06:26:53.869Z","__v":0,"notes":"HIJACKED by attacker"},{"_id":"6ab8bb6e02d2dbdf0c991e63","adoptionFormId":"000000000000000000000abc","adopterName":"IdorVictim2","adopterEmail":"idor_victim2@example.com","petName":"Rex","date":"2030-02-01T00:00:00.000Z","status":"pending","userResponse":"pending","createdAt":"2026-09-27T06:45:02.532Z","updatedAt":"2026-09-27T06:45:02.532Z","__v":0}]
+
+## adoption_manager approves victim application (legit status change):
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 393
+ETag: W/"189-6iBleXsFmiTq6VwA9Z/mVArwS6U"
+Date: Sun, 27 Sep 2026 06:48:46 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8bb6e02d2dbdf0c991e61","firstName":"Victim","lastName":"Person","email":"idor_victim2@example.com","phoneNumber":"0720000010","petType":"Dog","petName":"Rex","homeType":"House","employmentStatus":"Employed","hasYard":true,"hasOtherPets":false,"additionalInfo":"private notes","status":"approved","createdAt":"2026-09-27T06:45:02.311Z","updatedAt":"2026-09-27T06:48:46.513Z","__v":0}

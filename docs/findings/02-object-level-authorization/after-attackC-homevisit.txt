@@ -1,0 +1,29 @@
+# IDOR C - modify another user's home visit (AFTER)
+# Attempted: GET /:id, PUT /:id as ATTACKER
+# Expected AFTER fix: 403 (only owner or adoption manager)
+
+## (1) GET victim visit (attacker token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 50
+ETag: W/"32-0ySLQqw5080EradKbua2GeUMK1E"
+Date: Sun, 27 Sep 2026 06:45:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Not authorized to view this home visit"}
+
+## (2) PUT tamper victim visit (attacker token):
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 52
+ETag: W/"34-DHlhiOH4I/XXzCTUKprMBIxyqIk"
+Date: Sun, 27 Sep 2026 06:45:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Not authorized to update this home visit"}

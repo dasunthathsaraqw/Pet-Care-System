@@ -1,0 +1,15 @@
+# REGRESSION - normal user views own profile
+# Expected: 200 with the user's own profile
+# ---
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 238
+ETag: W/"ee-Ikr7w+eE1Iw8F9grO44vZ2kqqSE"
+Date: Sun, 27 Sep 2026 04:40:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab783401864ac9236362eb3","name":"LegitUser","email":"legit_user@example.com","phoneNumber":"0710000001","city":"Testville","profilePicture":"","createdAt":"2026-09-26T08:33:04.168Z","updatedAt":"2026-09-26T08:33:04.168Z","__v":0}

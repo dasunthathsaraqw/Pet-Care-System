@@ -1,4 +1,5 @@
 import AdoptionForm from '../models/adoptionForm.js';
+import { isAdmin } from '../middleware/roleMiddleware.js';
 
 export const createApplication = async (req, res) => {
     try {
@@ -58,6 +59,11 @@ export const getApplicationById = async (req, res) => {
         if (!application) {
             return res.status(404).json({ error: "Application not found" });
         }
+        // Ownership: only the applicant (by email) or an adoption manager (fix for audit finding #2 IDOR)
+        const owns = req.user?.email && application.email === req.user.email;
+        if (!owns && !(await isAdmin(req, ['adoption_manager']))) {
+            return res.status(403).json({ error: "Not authorized to view this application" });
+        }
         res.status(200).json(application);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -66,39 +72,43 @@ export const getApplicationById = async (req, res) => {
 
 export const updateApplication = async (req, res) => {
     try {
-        const editableFields = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
-        const submittedFields = req.body ?? {};
-        const updates = {};
+const submittedFields = req.body ?? {};
 
-        for (const field of editableFields) {
-            if (Object.prototype.hasOwnProperty.call(submittedFields, field)) {
-                updates[field] = submittedFields[field];
-            }
-        }
+const application = await AdoptionForm.findById(req.params.id);
+if (!application) {
+    return res.status(404).json({ error: "Application not found" });
+}
 
-        const application = await AdoptionForm.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true });
-        res.status(200).json(application);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+const owns = req.user?.email && application.email === req.user.email;
+const manager = await isAdmin(req, ['adoption_manager']);
+if (!owns && !manager) {
+    return res.status(403).json({ error: "Not authorized to update this application" });
+}
+
+// Define which fields owners may edit; managers may also change status.
+const ownerEditable = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
+const allowedFields = manager ? [...ownerEditable, 'status'] : ownerEditable;
+
+const updates = {};
+for (const field of allowedFields) {
+    if (Object.prototype.hasOwnProperty.call(submittedFields, field)) {
+        updates[field] = submittedFields[field];
     }
-};
+}
 
-export const updateApplicationStatus = async (req, res) => {
-    try {
-        const submittedFields = req.body ?? {};
-        const allowedStatuses = AdoptionForm.schema.path('status').enumValues;
+// Never allow the owner link to be reassigned.
+delete updates.email;
 
-        if (Object.keys(submittedFields).some(field => field !== 'status') ||
-            !allowedStatuses.includes(submittedFields.status)) {
-            return res.status(400).json({ error: 'Invalid status update' });
-        }
+// If status is being set, validate it against the schema enum.
+if (Object.prototype.hasOwnProperty.call(updates, 'status')) {
+    const allowedStatuses = AdoptionForm.schema.path('status').enumValues;
+    if (!allowedStatuses.includes(updates.status)) {
+        return res.status(400).json({ error: 'Invalid status update' });
+    }
+}
 
-        const application = await AdoptionForm.findByIdAndUpdate(
-            req.params.id,
-            { $set: { status: submittedFields.status } },
-            { new: true, runValidators: true }
-        );
-        res.status(200).json(application);
+const updated = await AdoptionForm.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true, runValidators: true });
+res.status(200).json(updated);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -106,6 +116,14 @@ export const updateApplicationStatus = async (req, res) => {
 
 export const deleteApplication = async (req, res) => {
     try {
+        const application = await AdoptionForm.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ error: "Application not found" });
+        }
+        const owns = req.user?.email && application.email === req.user.email;
+        if (!owns && !(await isAdmin(req, ['adoption_manager']))) {
+            return res.status(403).json({ error: "Not authorized to delete this application" });
+        }
         await AdoptionForm.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'Application deleted successfully' });
     } catch (error) {

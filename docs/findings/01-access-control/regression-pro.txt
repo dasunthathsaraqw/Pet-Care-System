@@ -1,0 +1,15 @@
+# REGRESSION - professional reaches own portal route
+# Expected: 200 on GET /api/appointments/ (their own appointments)
+# ---
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 2
+ETag: W/"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w"
+Date: Sun, 27 Sep 2026 04:40:43 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[]

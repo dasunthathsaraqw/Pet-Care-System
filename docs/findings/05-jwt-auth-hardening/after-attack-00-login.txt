@@ -1,0 +1,25 @@
+﻿# AFTER FIX — Fresh login after rotating the JWT secret
+
+# Command:
+curl.exe -i -X POST http://localhost:5000/api/users/login -H "Content-Type: application/json" -d '{"email":"sasi@gmail.com","password":"Sasisasi1!"}'
+
+# Output:
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 356
+ETag: W/"164-zmnv3UEDEFmY9xGnkW1kjran/b4"
+Date: Sun, 27 Sep 2026 09:19:54 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8c02978abdbeba12c8536","name":"sasi","email":"sasi@gmail.com","phoneNumber":"0712345678","city":"Colombo","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI4YzAyOTc4YWJkYmViYTEyYzg1MzYiLCJuYW1lIjoic2FzaSIsImVtYWlsIjoic2FzaUBnbWFpbC5jb20iLCJpYXQiOjE3OTA1MDA3OTQsImV4cCI6MTc5MTEwNTU5NH0.4bMQ6TncKgItrVGP8MX2I6RgF-ELgr262cWvOiq8Nko"}
+
+# Description:
+After the fix, the login still works normally. The server issues a fresh
+token signed with the new 256-bit random secret. This token is the input
+to the verification test that follows. Two things to note in this response:
+  - The token payload no longer relies on the placeholder secret.
+  - The 7-day expiry (exp - iat = 604800s) is still present here because
+    the lifetime change is handled in a later fix, not this one.

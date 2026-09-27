@@ -1,0 +1,11 @@
+﻿HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 373
+ETag: W/"175-g619oOXm469LS2trmyCMhpv+Z20"
+Date: Sun, 27 Sep 2026 08:49:32 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":true,"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoiNjgxNzNiYWM3NWQ1YzczZDM0ODQ3NDA4Iiwicm9sZSI6InVzZXJfYWRtaW4iLCJpYXQiOjE3OTA0OTg5NzIsImV4cCI6MTc5MDU4NTM3Mn0.valtc1A_4ywy-gkogZdWoHJO0DAEKJY4WPeaAcVWIkU","admin":{"_id":"68173bac75d5c73d34847408","name":"User Admin","email":"useradmin@gmail.com","role":"user_admin"}}

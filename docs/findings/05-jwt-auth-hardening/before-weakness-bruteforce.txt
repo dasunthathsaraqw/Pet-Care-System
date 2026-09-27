@@ -1,0 +1,15 @@
+﻿admin -> 400
+admin123 -> 400
+password -> 400
+password123 -> 400
+123456 -> 400
+12345678 -> 400
+qwerty -> 400
+letmein -> 400
+welcome -> 400
+useradmin -> 200
+useradmin123 -> 400
+Useradmin1! -> 400
+Admin@123 -> 400
+changeme -> 400
+root -> 400

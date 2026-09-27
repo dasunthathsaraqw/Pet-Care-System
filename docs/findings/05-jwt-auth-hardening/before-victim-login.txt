@@ -1,0 +1,11 @@
+﻿HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 363
+ETag: W/"16b-rSyk/47nbhjSJKzB63qUj177QJk"
+Date: Sun, 27 Sep 2026 07:19:06 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8c34778abdbeba12c853f","name":"Victim","email":"victim@gmail.com","phoneNumber":"0719999999","city":"Kandy","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI4YzM0Nzc4YWJkYmViYTEyYzg1M2YiLCJuYW1lIjoiVmljdGltIiwiZW1haWwiOiJ2aWN0aW1AZ21haWwuY29tIiwiaWF0IjoxNzkwNDkzNTQ2LCJleHAiOjE3OTEwOTgzNDZ9.ylzWuFJMj7QxF0OXFeLfOSck4CanBrBseA53sTrp0k8"}

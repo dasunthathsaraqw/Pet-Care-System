@@ -12,16 +12,30 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleSub;
+      },
       validate: {
         validator: function (v) {
-          return /\d{10}/.test(v);
+          return !v || /^\d{10}$/.test(v);
         },
         message: "Phone number must be a 10-digit number",
       },
     },
-    city: { type: String, required: true },
-    password: { type: String, required: true },
+    city: {
+      type: String,
+      required: function () {
+        return !this.googleSub;
+      },
+    },
+    password: {
+      type: String,
+      required: function () {
+        return !this.googleSub;
+      },
+    },
+    googleSub: { type: String, unique: true, sparse: true, index: true },
+    googleEmailVerified: { type: Boolean, default: false },
     cartData: { type: Object, default: {} },
     profilePicture: { type: String, default: "" },
   },
@@ -44,6 +58,7 @@ userSchema.pre("save", async function (next) {
 // Match entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   try {
+    if (!this.password) return false;
     return await bcrypt.compare(enteredPassword, this.password);
   } catch (error) {
     console.error("Error in matchPassword:", error); // Add error logging

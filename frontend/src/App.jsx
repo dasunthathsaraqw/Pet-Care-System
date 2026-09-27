@@ -45,6 +45,7 @@ import Availability_for_trainer from "./Pages/AvailabilityTrainerTable";
 import CancelationReq from "./Pages/CancelationReqPage";
 import ActiveProfessionals from "./Pages/ActiveProfessionals";
 import Login from "./Pages/Login";
+import OAuthCallback from "./Pages/OAuthCallback";
 import Signup from "./Pages/Signup";
 import PetAdoptionCoordinatorDashboard from "./Pages/AdoptionCoordinatorDashBoard";
 import AdoptionScheduler from "./Pages/HomeVisitScheduler";
@@ -105,6 +106,7 @@ const App = () => {
         />
 
         <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/signup" element={<MainLayout><Signup /></MainLayout>} />
 
         <Route

@@ -837,9 +837,41 @@ export const createAvlReqAppointment = async (req, res) => {
 
 
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 100;
+
+const parseBoundedPagination = (pageValue, limitValue) => {
+  const pageText = String(pageValue ?? DEFAULT_PAGE).trim();
+  const limitText = String(limitValue ?? DEFAULT_LIMIT).trim();
+  const positiveIntegerPattern = /^[1-9]\d*$/;
+
+  if (!positiveIntegerPattern.test(pageText) || !positiveIntegerPattern.test(limitText)) {
+    return {
+      error: `Page must be a positive integer and limit must be an integer between 1 and ${MAX_LIMIT}`,
+    };
+  }
+
+  const page = Number(pageText);
+  const limit = Number(limitText);
+
+  if (!Number.isSafeInteger(page) || !Number.isSafeInteger(limit) || limit > MAX_LIMIT) {
+    return {
+      error: `Page must be a positive integer and limit must be an integer between 1 and ${MAX_LIMIT}`,
+    };
+  }
+
+  return { page, limit };
+};
+
 export const getVeterinarianAppointmentsRequest = async (req, res) => {
   try {
-    const { date, professionalId, page = 1, limit = 10 } = req.query;
+    const { date, professionalId, page: pageValue, limit: limitValue } = req.query;
+    const pagination = parseBoundedPagination(pageValue, limitValue);
+    if (pagination.error) {
+      return res.status(400).json({ success: false, message: pagination.error });
+    }
+    const { page, limit } = pagination;
 
     const query = { professionalType: "vet" };
 
@@ -857,7 +889,7 @@ export const getVeterinarianAppointmentsRequest = async (req, res) => {
     const vetAvailabilities = await AppointmentTemp.find(query)
       .sort({ appointmentDate: -1, startTime: 1 })
       .skip((page - 1) * limit)
-      .limit(parseInt(limit))
+      .limit(limit)
       .lean();
 
     // Manually fetch professional details by matching professionalId with pID
@@ -889,10 +921,10 @@ export const getVeterinarianAppointmentsRequest = async (req, res) => {
       message: "Veterinarian availabilities retrieved successfully",
       data: formattedAvailabilities,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: page,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit),
+        itemsPerPage: limit,
       },
     });
   } catch (error) {
@@ -916,7 +948,12 @@ export const getVeterinarianAppointmentsRequest = async (req, res) => {
 
 export const getGroomerAppointmentsRequest = async (req, res) => {
   try {
-    const { date, doctorId, page = 1, limit = 10 } = req.query;
+    const { date, doctorId, page: pageValue, limit: limitValue } = req.query;
+    const pagination = parseBoundedPagination(pageValue, limitValue);
+    if (pagination.error) {
+      return res.status(400).json({ success: false, message: pagination.error });
+    }
+    const { page, limit } = pagination;
     const query = { professionalType: 'groomer' };
     
     if (date) {
@@ -934,7 +971,7 @@ export const getGroomerAppointmentsRequest = async (req, res) => {
       .find(query)
       .sort({ appointmentDate: 1, startTime: 1 })
       .skip((page - 1) * limit)
-      .limit(parseInt(limit))
+      .limit(limit)
       .lean();
 
     // Log the raw appointments for debugging
@@ -972,10 +1009,10 @@ export const getGroomerAppointmentsRequest = async (req, res) => {
       message: 'Groomer availabilities retrieved successfully',
       data: groomerAvailabilitiesWithDetails,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: page,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit)
+        itemsPerPage: limit
       }
     });
   } catch (error) {
@@ -998,7 +1035,12 @@ export const getGroomerAppointmentsRequest = async (req, res) => {
 
 export const getPetTrainerAppointmentsRequest = async (req, res) => {
   try {
-    const { date, doctorId, page = 1, limit = 10 } = req.query;
+    const { date, doctorId, page: pageValue, limit: limitValue } = req.query;
+    const pagination = parseBoundedPagination(pageValue, limitValue);
+    if (pagination.error) {
+      return res.status(400).json({ success: false, message: pagination.error });
+    }
+    const { page, limit } = pagination;
     const query = { professionalType: 'pet-trainer' };
     
     if (date) {
@@ -1016,7 +1058,7 @@ export const getPetTrainerAppointmentsRequest = async (req, res) => {
       .find(query)
       .sort({ appointmentDate: 1, startTime: 1 })
       .skip((page - 1) * limit)
-      .limit(parseInt(limit))
+      .limit(limit)
       .lean();
 
     // Log the raw appointments for debugging
@@ -1054,10 +1096,10 @@ export const getPetTrainerAppointmentsRequest = async (req, res) => {
       message: 'Pet trainer availabilities retrieved successfully',
       data: trainerAvailabilitiesWithDetails,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: page,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit)
+        itemsPerPage: limit
       }
     });
   } catch (error) {
@@ -2359,7 +2401,12 @@ export const getPetById = async (req, res) => {
 export const getRefundRequests = async (req, res) => {
   try {
     console.log('Fetching refund requests'); // Debug log
-    const { page = 1, limit = 10 } = req.query;
+    const { page: pageValue, limit: limitValue } = req.query;
+    const pagination = parseBoundedPagination(pageValue, limitValue);
+    if (pagination.error) {
+      return res.status(400).json({ success: false, message: pagination.error });
+    }
+    const { page, limit } = pagination;
     const skip = (page - 1) * limit;
 
     const requests = await RefundRequest.find()
@@ -2370,7 +2417,7 @@ export const getRefundRequests = async (req, res) => {
       })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit);
 
     const total = await RefundRequest.countDocuments();
 
@@ -2378,7 +2425,7 @@ export const getRefundRequests = async (req, res) => {
       success: true,
       count: requests.length,
       total,
-      page: parseInt(page),
+      page,
       pages: Math.ceil(total / limit),
       data: requests,
     });

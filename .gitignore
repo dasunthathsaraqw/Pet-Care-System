@@ -1,3 +1,8 @@
 # Dependencies are restored from package-lock.json and must not be committed.
 node_modules/
 
+# Local environment files may contain credentials.
+.env
+.env.*
+!**/.env.example
+

@@ -1,7 +1,9 @@
+import "./config/loadEnv.js";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 
@@ -28,17 +30,26 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import petStoreReviewRouter from "./routes/petStoreReviewRoute.js";
 import reportRoutes from "./routes/reportRoutes.js"; // Add this line
-
-
-dotenv.config();
+import googleAuthRoutes from "./routes/googleAuthRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const uploadsDirectory = fileURLToPath(new URL('./uploads/', import.meta.url));
+const allowedUploadExtensions = new Set(['.jpg', '.jpeg', '.png', '.gif']);
 
 // Middleware
 app.use(cors());
 app.use(express.json()); // Parse incoming JSON requests
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', (req, res, next) => {
+  if (!allowedUploadExtensions.has(path.extname(req.path).toLowerCase())) {
+    return res.sendStatus(404);
+  }
+  next();
+}, express.static(uploadsDirectory, {
+  setHeaders(res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+  }
+}));
 
 // Cloudinary Configuration
 cloudinary.config({
@@ -50,6 +61,7 @@ cloudinary.config({
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/auth", googleAuthRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/admins", adminRoutes);
 

@@ -64,9 +64,9 @@ export const login = async (req, res) => {
 
     const admin = await Admin.findOne({ email });
     if (!admin) {
-      return res.status(404).json({
+      return res.status(400).json({ // FIX 5.3: Prevent user enumeration (same status & message as wrong password)
         success: false,
-        message: "Admin not found",
+        message: "Invalid email or password", // FIX 5.3
       });
     }
 
@@ -79,7 +79,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { adminId: admin._id, role: admin.role },
+      { adminId: admin._id, role: admin.role, type: "admin" }, // FIX 5.2
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );

@@ -61,7 +61,7 @@ const readCookie = (req, name) => {
 
 const createApplicationToken = (user) =>
   jwt.sign(
-    { userId: user._id, name: user.name, email: user.email },
+    { userId: user._id, name: user.name, email: user.email, type: "user" }, // FIX 5.2
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );

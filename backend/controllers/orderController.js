@@ -13,8 +13,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const placeOrder = async (req,res)=>{
     try {
-        const {userId,items,amount,address}=req.body;
-        
+        // Owner from token, not body (fix for audit finding #2 IDOR)
+        const userId = req.user?.userId;
+        const {items,amount,address}=req.body;
+
         // Validate required fields
         if (!userId || !items || !amount || !address) {
             return res.status(400).json({success:false,message:"Missing required fields"});
@@ -72,7 +74,9 @@ const placeOrder = async (req,res)=>{
 
 const placeOrderStripe = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        // Owner from token, not body (fix for audit finding #2 IDOR)
+        const userId = req.user?.userId;
+        const { items, amount, address } = req.body;
         const { origin } = req.headers;
 
         // Validate required fields
@@ -246,7 +250,8 @@ const getAllOrders = async (req, res) => {
 // Get user orders
 const getUserOrders = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        // Owner comes from the authenticated token, never the request body (fix for audit finding #2 IDOR)
+        const userId = req.user?.userId;
         if (!userId) {
             return res.status(401).json({ success: false, message: 'User ID not found' });
         }
@@ -281,13 +286,22 @@ const getUserOrders = async (req, res) => {
 const getOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const order = await orderModel.findById(orderId)
-            .populate('user', 'name email')
-            .populate('items.product', 'name price');
+        const order = await orderModel.findById(orderId);
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
+
+        // Ownership check before returning any data (fix for audit finding #2 IDOR)
+        if (String(order.userId) !== String(req.user?.userId)) {
+            return res.status(403).json({ success: false, message: 'Not authorized to view this order' });
+        }
+
+        // Populate the correct schema paths (previous 'user'/'items.product' paths do not exist).
+        await order.populate([
+            { path: 'userId', select: 'name email' },
+            { path: 'products.productId', select: 'name price' },
+        ]);
 
         res.json({ success: true, order });
     } catch (error) {

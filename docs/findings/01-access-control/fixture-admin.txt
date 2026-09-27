@@ -1,0 +1,11 @@
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 43
+ETag: W/"2b-scXYvyGYbIu8asB9PrO52U0WeOs"
+Date: Sat, 26 Sep 2026 08:33:04 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Admin registered successfully"}

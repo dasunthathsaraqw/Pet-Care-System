@@ -1,0 +1,15 @@
+# ATTACK 4 - anonymous refund approval
+# Attempted: PATCH /api/appointments/refundrequests/TESTID/status, no auth
+# Expected when fixed: 401 before any handler runs
+
+HTTP/1.1 500 Internal Server Error
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 185
+ETag: W/"b9-cdZBtVjtoSU4vXake7n8YRBqchI"
+Date: Sat, 26 Sep 2026 08:33:05 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Server error while updating refund status.","error":"Cast to ObjectId failed for value \"TESTID\" (type string) at path \"_id\" for model \"RefundRequest\""}

@@ -1,0 +1,11 @@
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 458
+ETag: W/"1ca-Lwj9N+s8yq6slaTA2nHyNqGzkbQ"
+Date: Sat, 26 Sep 2026 08:33:04 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"User registered successfully","user":{"_id":"6ab783401864ac9236362eb3","name":"LegitUser","email":"legit_user@example.com","phoneNumber":"0710000001","city":"Testville","profilePicture":"","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI3ODM0MDE4NjRhYzkyMzYzNjJlYjMiLCJuYW1lIjoiTGVnaXRVc2VyIiwiZW1haWwiOiJsZWdpdF91c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzkwNDExNTg0LCJleHAiOjE3OTEwMTYzODR9.tnOoT4tG6339wFUcCoGZe4PP88rTCvGg-zxR2eW_xUg"}}

@@ -1,0 +1,11 @@
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 207
+ETag: W/"cf-Rwo9S/74val1OS872/rgaCgeRJ0"
+Date: Sat, 26 Sep 2026 08:33:04 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Professional registered successfully.","professional":{"_id":"6ab783401864ac9236362eb9","pName":"LegitVet","pemail":"legit_vet@example.com","role":"vet","pID":"VET-TEST-001","profilePicture":""}}

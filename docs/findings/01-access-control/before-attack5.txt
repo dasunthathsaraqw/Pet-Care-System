@@ -1,0 +1,29 @@
+# ATTACK 5 - anonymous event create and delete
+# Attempted: POST /api/events then DELETE /api/events/:id, no auth
+# Expected when fixed: 401 on both (event managers only)
+
+## Step A: anonymous CREATE
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 356
+ETag: W/"164-hBV3N/wRDm3QpPFwxW7P2Lh6pSs"
+Date: Sat, 26 Sep 2026 08:33:23 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"title":"TEST Event 2","date":"2030-01-01T00:00:00.000Z","time":"11:00","location":"Test Hall","description":"anon create demo 2","eventImageURL":"","maxAttendees":50,"price":10,"status":"active","registeredTickets":0,"refundPolicy":{"minDays":2,"maxDays":7,"percentage":50},"_id":"6ab783531864ac9236362ec4","createdAt":"2026-09-26T08:33:23.464Z","__v":0}
+
+## Step B: anonymous DELETE of event 6ab783531864ac9236362ec2
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 40
+ETag: W/"28-wRdTlJ5aU6ll9KPBiGmQileIzOM"
+Date: Sat, 26 Sep 2026 08:33:23 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Event deleted successfully"}

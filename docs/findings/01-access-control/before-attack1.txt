@@ -1,0 +1,15 @@
+# ATTACK 1 - anonymous admin self-registration
+# Attempted: POST /api/admins/register with role=user_admin, no auth
+# Expected when fixed: 401/403 (route removed or protected)
+
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 43
+ETag: W/"2b-scXYvyGYbIu8asB9PrO52U0WeOs"
+Date: Sat, 26 Sep 2026 08:33:05 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Admin registered successfully"}

@@ -66,7 +66,38 @@ export const getApplicationById = async (req, res) => {
 
 export const updateApplication = async (req, res) => {
     try {
-        const application = await AdoptionForm.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const editableFields = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
+        const submittedFields = req.body ?? {};
+        const updates = {};
+
+        for (const field of editableFields) {
+            if (Object.prototype.hasOwnProperty.call(submittedFields, field)) {
+                updates[field] = submittedFields[field];
+            }
+        }
+
+        const application = await AdoptionForm.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true });
+        res.status(200).json(application);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const updateApplicationStatus = async (req, res) => {
+    try {
+        const submittedFields = req.body ?? {};
+        const allowedStatuses = AdoptionForm.schema.path('status').enumValues;
+
+        if (Object.keys(submittedFields).some(field => field !== 'status') ||
+            !allowedStatuses.includes(submittedFields.status)) {
+            return res.status(400).json({ error: 'Invalid status update' });
+        }
+
+        const application = await AdoptionForm.findByIdAndUpdate(
+            req.params.id,
+            { $set: { status: submittedFields.status } },
+            { new: true, runValidators: true }
+        );
         res.status(200).json(application);
     } catch (error) {
         res.status(400).json({ error: error.message });

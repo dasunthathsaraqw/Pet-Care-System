@@ -1,0 +1,32 @@
+# NoSQL-3 user & professional login (AFTER)
+# Attempted: email={$ne:null} on /users/login and /professionals/profflogin
+# Expected AFTER fix: 400 bad input — object rejected before the query
+
+## user login email={"$ne":null}:
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 45
+ETag: W/"2d-xu7+uV0l2vKD05IjA0aWEJyDeEc"
+Date: Sun, 27 Sep 2026 07:48:34 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Email and password are required"}
+
+## professional login email={"$ne":null}:
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 4
+Date: Sun, 27 Sep 2026 07:48:34 GMT
+X-RateLimit-Reset: 1790496215
+Content-Type: application/json; charset=utf-8
+Content-Length: 43
+ETag: W/"2b-C6e/EBdR6LXyNK5A/isCT2gR1vI"
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Email and password are required"}

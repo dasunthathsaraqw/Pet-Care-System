@@ -1,0 +1,29 @@
+# NoSQL-1 operator injection reaches the query (admin login)
+# Attempted: POST /api/admins/login with email as an OBJECT {$ne:null} vs a non-existent STRING
+# Expected when fixed: Input must be rejected/treated as a string; object operators never reach the query
+
+## (baseline) non-existent string email -> should be 404 Admin not found:
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 45
+ETag: W/"2d-FezyxQoqiOzVY7d+OV7+z/8ytpE"
+Date: Sun, 27 Sep 2026 07:38:55 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Admin not found"}
+
+## (injection) email={"$ne":null} -> matches an admin, so 400 Invalid password (operator WAS interpreted):
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 55
+ETag: W/"37-5uDpJTljPBecOPs/j7OXFdPRcmQ"
+Date: Sun, 27 Sep 2026 07:38:55 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Invalid email or password"}

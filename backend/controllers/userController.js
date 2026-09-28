@@ -7,7 +7,7 @@ import fs from 'fs';
 // Generate JWT token
 const generateToken = (user) => {
   return jwt.sign(
-    { userId: user._id, name: user.name, email: user.email },
+    { userId: user._id, name: user.name, email: user.email, type: "user" }, // FIX 5.2
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -203,7 +203,7 @@ export const updateProfile = async (req, res) => {
 
     // Generate new token with the same structure as the original token
     const token = jwt.sign(
-      { userId: user._id, name: user.name, email: user.email },
+      { userId: user._id, name: user.name, email: user.email, type: "user" }, // FIX 5.2
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );

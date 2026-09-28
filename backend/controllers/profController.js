@@ -49,6 +49,7 @@ export const profLogin = async (req, res) => {
         id: professional._id,
         pID: professional.pID,
         role: professional.role,
+        type: "professional", // FIX 5.2
       },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
@@ -74,7 +75,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const generateToken = (id) => {
-  return jwt.sign({ id, role: "professional" }, process.env.JWT_SECRET, {
+  return jwt.sign({ id, role: "professional", type: "professional" }, process.env.JWT_SECRET, { // FIX 5.2
     expiresIn: "30d",
   });
 };

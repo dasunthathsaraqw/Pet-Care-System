@@ -1,0 +1,11 @@
+﻿HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 433
+ETag: W/"1b1-7drFSoNKid84l6pLHHJlrmY5wcY"
+Date: Sun, 27 Sep 2026 07:18:32 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"User registered successfully","user":{"_id":"6ab8c34778abdbeba12c853f","name":"Victim","email":"victim@gmail.com","phoneNumber":"0719999999","city":"Kandy","profilePicture":"","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI4YzM0Nzc4YWJkYmViYTEyYzg1M2YiLCJuYW1lIjoiVmljdGltIiwiZW1haWwiOiJ2aWN0aW1AZ21haWwuY29tIiwiaWF0IjoxNzkwNDkzNTEyLCJleHAiOjE3OTEwOTgzMTJ9.PJCuLz3F1dyPX1b_sDoYFUgh-U8a6Z07fNZ-IMGPsyQ"}}

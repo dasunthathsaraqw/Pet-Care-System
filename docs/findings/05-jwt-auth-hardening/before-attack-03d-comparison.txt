@@ -1,0 +1,5 @@
+﻿=== ATTACKER (Sasi, logged in legitimately) ===
+{"_id":"6ab8c02978abdbeba12c8536","name":"sasi","email":"sasi@gmail.com","phoneNumber":"0712345678","city":"Colombo","googleEmailVerified":false,"profilePicture":"","createdAt":"2026-09-27T07:05:13.322Z","updatedAt":"2026-09-27T07:05:13.322Z","__v":0}
+
+=== VICTIM (Sasi logged in via FORGED token, no password) ===
+{"_id":"6ab8c34778abdbeba12c853f","name":"Victim","email":"victim@gmail.com","phoneNumber":"0719999999","city":"Kandy","googleEmailVerified":false,"profilePicture":"","createdAt":"2026-09-27T07:18:31.929Z","updatedAt":"2026-09-27T07:18:31.929Z","__v":0}

@@ -11,6 +11,9 @@ const adminAuth = async (req, res, next) => {
   let decoded;
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.type !== "admin") { // FIX 5.2
+      return res.status(401).json({ message: "Invalid or expired token" }); // FIX 5.2
+    } // FIX 5.2
   } catch (error) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }

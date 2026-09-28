@@ -55,8 +55,8 @@ export const registerAdmin = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    // Credentials must be strings; reject objects like {$ne:null}/{$regex:...}
-    // before they ever reach the query (fix for audit finding #3 NoSQL injection).
+    // FIX 8 (NoSQL operator injection): credentials must be strings so an
+    // object like {"$regex":"^a"} never reaches the Mongoose filter.
     if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -66,8 +66,8 @@ export const login = async (req, res) => {
 
     const admin = await Admin.findOne({ email });
 
-    // Same generic response whether the account is missing or the password is
-    // wrong, so the endpoint no longer leaks which admin emails exist.
+    // FIX 5.3: same response for unknown account and wrong password, so the
+    // endpoint no longer leaks which admin emails exist.
     const isMatch = admin ? await admin.comparePassword(password) : false;
     if (!admin || !isMatch) {
       return res.status(401).json({
@@ -77,7 +77,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { adminId: admin._id, role: admin.role },
+      { adminId: admin._id, role: admin.role, type: "admin" }, // FIX 5.2
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );

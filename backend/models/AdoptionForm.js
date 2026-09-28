@@ -15,7 +15,7 @@ const adoptionFormSchema = new mongoose.Schema({
     additionalInfo: { type: String },
     status: { 
         type: String, 
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'pending_review', 'approved', 'rejected'],
         default: 'pending'
     }
 }, { timestamps: true });

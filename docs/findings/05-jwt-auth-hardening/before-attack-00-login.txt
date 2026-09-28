@@ -1,0 +1,11 @@
+﻿HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 356
+ETag: W/"164-RX+8SSaV4VVzThTaWvnqYZK7Ob0"
+Date: Sun, 27 Sep 2026 07:25:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"_id":"6ab8c02978abdbeba12c8536","name":"sasi","email":"sasi@gmail.com","phoneNumber":"0712345678","city":"Colombo","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWI4YzAyOTc4YWJkYmViYTEyYzg1MzYiLCJuYW1lIjoic2FzaSIsImVtYWlsIjoic2FzaUBnbWFpbC5jb20iLCJpYXQiOjE3OTA0OTM5NDIsImV4cCI6MTc5MTA5ODc0Mn0.6uRpxDxOgGlTT_tqpeemBu4PBHAbNrpVH_2vxznT86Q"}

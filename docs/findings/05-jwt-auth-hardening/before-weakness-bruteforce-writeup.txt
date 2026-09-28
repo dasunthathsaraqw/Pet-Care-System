@@ -1,0 +1,35 @@
+﻿# ADDITIONAL WEAKNESS — Brute force on admin login
+
+# Target: POST /api/admins/login
+# Goal:   (a) prove the endpoint has no rate limiting or lockout
+#         (b) prove a weak admin password can be guessed
+# Expected (secure):
+#   - 429 Too Many Requests after N failed attempts
+#   - strong password policy so 'useradmin' would never be allowed
+# Actual (this run):
+#   - 15 rapid attempts, no 429
+#   - password 'useradmin' accepted on the 10th try -> 200 OK
+
+## 1. Inputs
+Admin email: useradmin@gmail.com
+Wordlist:    15 common passwords (see admin-passwords.txt)
+
+## 2. Command
+powershell -ExecutionPolicy Bypass -File .\bruteforce.ps1
+
+## 3. Output
+See before-weakness-bruteforce.txt
+Key line: useradmin -> 200
+
+## 4. Interpretation
+The admin account was compromised by trying a short list of common
+passwords. Two weaknesses made this possible:
+  1. No rate limiting or lockout on /api/admins/login.
+  2. No password policy, so the admin was allowed to set the password
+     'useradmin' — identical to the local part of the email.
+The captured admin token can be used against every admin-guarded route.
+Combined with Finding 1, this gives full control of the system.
+
+## 5. Files
+- before-weakness-bruteforce.txt           (15-attempt loop)
+- before-weakness-bruteforce-success.txt   (successful login)

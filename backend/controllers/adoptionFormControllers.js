@@ -72,27 +72,58 @@ export const getApplicationById = async (req, res) => {
 
 export const updateApplication = async (req, res) => {
     try {
-        const application = await AdoptionForm.findById(req.params.id);
+const submittedFields = req.body ?? {};
+
+const application = await AdoptionForm.findById(req.params.id);
+if (!application) {
+    return res.status(404).json({ error: "Application not found" });
+}
+
+const owns = req.user?.email && application.email === req.user.email;
+const manager = await isAdmin(req, ['adoption_manager']);
+if (!owns && !manager) {
+    return res.status(403).json({ error: "Not authorized to update this application" });
+}
+
+// This route updates only applicant-editable fields for every caller.
+const allowedFields = ['homeType', 'employmentStatus', 'hasYard', 'hasOtherPets', 'additionalInfo'];
+
+const updates = {};
+for (const field of allowedFields) {
+    if (Object.prototype.hasOwnProperty.call(submittedFields, field)) {
+        updates[field] = submittedFields[field];
+    }
+}
+
+// Never allow the owner link to be reassigned.
+delete updates.email;
+
+const updated = await AdoptionForm.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true, runValidators: true });
+res.status(200).json(updated);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const updateApplicationStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!status) {
+            return res.status(400).json({ error: "Status is required" });
+        }
+        const allowedStatuses = AdoptionForm.schema.path('status').enumValues;
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ error: "Invalid status update" });
+        }
+        const application = await AdoptionForm.findByIdAndUpdate(
+            req.params.id,
+            { $set: { status } },
+            { new: true, runValidators: true }
+        );
         if (!application) {
             return res.status(404).json({ error: "Application not found" });
         }
-
-        const owns = req.user?.email && application.email === req.user.email;
-        const manager = await isAdmin(req, ['adoption_manager']);
-        if (!owns && !manager) {
-            return res.status(403).json({ error: "Not authorized to update this application" });
-        }
-
-        // Only an adoption manager may change the decision status; owners cannot self-approve.
-        const updates = { ...req.body };
-        if (!manager) {
-            delete updates.status;
-        }
-        // Never allow the owner link to be reassigned.
-        delete updates.email;
-
-        const updated = await AdoptionForm.findByIdAndUpdate(req.params.id, updates, { new: true });
-        res.status(200).json(updated);
+        res.status(200).json(application);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

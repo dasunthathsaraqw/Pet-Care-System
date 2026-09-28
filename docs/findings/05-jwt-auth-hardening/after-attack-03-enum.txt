@@ -1,0 +1,30 @@
+﻿# AFTER FIX — User enumeration on admin login (FIXED)
+
+# Commands:
+#   Two login attempts:
+#     a. unknown email  -> doesnotexist@nowhere.io
+#     b. real email, wrong password -> useradmin@gmail.com
+
+curl.exe -i -X POST http://localhost:5000/api/admins/login -H "Content-Type: application/json" -d '{"email":"doesnotexist@nowhere.io","password":"anything"}'
+curl.exe -i -X POST http://localhost:5000/api/admins/login -H "Content-Type: application/json" -d '{"email":"useradmin@gmail.com","password":"wrongpass"}'
+
+# Output (identical for both):
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+Content-Length: 55
+
+{"success":false,"message":"Invalid email or password"}
+
+# Description:
+Before the fix, an unknown email returned 404 "Admin not found" while
+a real email with the wrong password returned 400 "Invalid email or
+password". An attacker could enumerate valid admin emails by probing.
+
+After the fix, both cases return the identical HTTP 400 and the same
+message. There is no longer any observable difference between a
+non-existent account and an incorrect password.
+
+# Evidence files:
+- after-attack-03-enum-unknown.txt   (raw response, unknown email)
+- after-attack-03-enum-real.txt      (raw response, real email)
+- fix-09-enum-fix.png                (code change in adminController.js)

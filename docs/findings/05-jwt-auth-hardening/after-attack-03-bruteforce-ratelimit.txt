@@ -1,0 +1,32 @@
+﻿# AFTER FIX — Brute force on admin login (BLOCKED by rate limiting)
+
+# Command:
+#   Re-ran the same 15-password loop from before the fix, using the
+#   admin-passwords.txt wordlist against useradmin@gmail.com.
+
+admin         -> 400
+admin123      -> 400
+password      -> 400
+password123   -> 400
+123456        -> 400
+12345678      -> 400
+qwerty        -> 400
+letmein       -> 400
+welcome       -> 400
+useradmin     -> 200
+useradmin123  -> 429
+Useradmin1!   -> 429
+Admin@123     -> 429
+changeme      -> 429
+root          -> 429
+
+# Description:
+After 10 attempts within a 15-minute window, every further attempt
+receives HTTP 429 Too Many Requests with the body
+{"success":false,"message":"Too many login attempts. Try again later."}.
+The exact attack that cracked the admin password before the fix is now
+throttled by the rate limiter on POST /api/admins/login.
+
+# Evidence files:
+- after-attack-03-bruteforce-ratelimit.txt   (raw output, above)
+- fix-07-rate-limit-middleware.png           (new middleware)

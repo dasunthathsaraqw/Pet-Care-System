@@ -1,0 +1,27 @@
+﻿# AFTER FIX — Forged token with NO type claim (BLOCKED)
+
+# Goal:
+#   Re-run the pre-fix Attack 2 payload (a user token with no type claim)
+#   and confirm the server now rejects it.
+
+# Command:
+curl.exe -i http://localhost:5000/api/users/profile -H "Authorization: Bearer $FORGED_NO_TYPE"
+
+# Output:
+HTTP/1.1 401 Unauthorized
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 38
+ETag: W/"26-Xgv+GaqVb5MdihttTXhzczcstUY"
+Date: Sun, 27 Sep 2026 09:54:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"Invalid or expired token"}
+
+# Description:
+Before the fix, this exact request returned 200 OK with the victim's
+profile. After the fix, the middleware reads decoded.type, finds it
+missing, and rejects the request with a generic 401. The attacker
+cannot slip a token past the type check by simply omitting the claim.

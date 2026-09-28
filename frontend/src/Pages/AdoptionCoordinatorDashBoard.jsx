@@ -2056,8 +2056,8 @@ const PetAdoptionCoordinatorDashboard = () => {
   const handleApproveApplication = async (formId) => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/adoptionform/update/${formId}`,
+      await axios.patch(
+        `http://localhost:5000/api/adoptionform/status/${formId}`,
         { status: 'approved' },
         {
           headers: {
@@ -2091,8 +2091,8 @@ const PetAdoptionCoordinatorDashboard = () => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
       // Reject the application
-      await axios.put(
-        `http://localhost:5000/api/adoptionform/update/${formId}`,
+      await axios.patch(
+        `http://localhost:5000/api/adoptionform/status/${formId}`,
         { status: 'rejected' },
         {
           headers: {
@@ -2443,8 +2443,8 @@ const PetAdoptionCoordinatorDashboard = () => {
       );
 
       // Update the adoption form status to pending review
-      await axios.put(
-        `http://localhost:5000/api/adoptionform/update/${visit.adoptionFormId}`,
+      await axios.patch(
+        `http://localhost:5000/api/adoptionform/status/${visit.adoptionFormId}`,
         { status: 'pending_review' },
         {
           headers: {
